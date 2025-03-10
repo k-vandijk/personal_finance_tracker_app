@@ -29,7 +29,7 @@ public class AuthenticationController : BaseController
         if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
             return BadRequest("Email and password are required.");
 
-        if (await _context.Users.AnyAsync(u => u.Email.ToUpper() == dto.Email.ToUpper()))
+        if (await _context.Users.AnyAsync(u => u.Active && u.Email.ToUpper() == dto.Email.ToUpper()))
             return BadRequest("User already exists.");
 
         string passwordSalt = _hashingService.GenerateSalt();
@@ -54,7 +54,7 @@ public class AuthenticationController : BaseController
         if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
             return BadRequest("Email and password are required.");
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToUpper() == dto.Email.ToUpper());
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Active && u.Email.ToUpper() == dto.Email.ToUpper());
         if (user == null || !_hashingService.Verify(dto.Password, user.PasswordHash, user.PasswordSalt))
             return Unauthorized("Invalid credentials.");
 

@@ -1,14 +1,19 @@
 using financeapp.api;
 using financeapp.api.Services.HashingService;
 using financeapp.api.Services.JwtService;
+using financeapp.api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
+// Add Controllers
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 // Add JWT authentication
 builder.Services.AddAuthentication(options =>
@@ -45,5 +50,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+    await Seeder.SeedCategoriesAsync(context);
+}
 
 app.Run();
