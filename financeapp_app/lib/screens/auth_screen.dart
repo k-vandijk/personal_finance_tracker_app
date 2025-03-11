@@ -8,19 +8,18 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void onSubmit(String email, String password) async {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      try {
-        await authService.login(email, password);
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
-      }
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    void login(String email, String password) async {
+      await authService.login(email, password);
+    }
+
+    void register(String email, String password) async {
+      await authService.register(email, password);
     }
 
     return Scaffold(
-      body: Center(child: AuthForm(onSubmit: onSubmit)),
+      body: Center(child: AuthForm(onLogin: login, onRegister: register)),
     );
   }
 }
