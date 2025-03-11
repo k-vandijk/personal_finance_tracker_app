@@ -1,4 +1,6 @@
 using financeapp.api;
+using financeapp.api.Profiles;
+using financeapp.api.Services.AssetsService;
 using financeapp.api.Services.HashingService;
 using financeapp.api.Services.JwtService;
 using financeapp.api.Utils;
@@ -39,8 +41,12 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddNpgsql<DataContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // Add Services
+builder.Services.AddScoped<IAssetsService, AssetsService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+// Add Automapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 
 var app = builder.Build();

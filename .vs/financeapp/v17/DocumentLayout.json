@@ -7,20 +7,12 @@
       "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\controllers\\assetscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|c:\\users\\kevin\\repos\\financeapp\\financeapp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|c:\\users\\kevin\\repos\\financeapp\\financeapp.api\\services\\assetsservice\\assetsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\services\\assetsservice\\assetsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|c:\\users\\kevin\\repos\\financeapp\\financeapp.api\\utils\\seeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\utils\\seeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|c:\\users\\kevin\\repos\\financeapp\\financeapp.api\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|c:\\users\\kevin\\repos\\financeapp\\financeapp.api\\controllers\\authenticationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\controllers\\authenticationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|c:\\users\\kevin\\repos\\financeapp\\financeapp.api\\services\\assetsservice\\iassetsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\services\\assetsservice\\iassetsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,45 +22,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Program.cs",
-              "RelativeDocumentMoniker": "financeapp.api\\Program.cs",
-              "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Program.cs",
-              "RelativeToolTip": "financeapp.api\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-10T20:50:41.795Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Seeder.cs",
-              "DocumentMoniker": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Utils\\Seeder.cs",
-              "RelativeDocumentMoniker": "financeapp.api\\Utils\\Seeder.cs",
-              "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Utils\\Seeder.cs",
-              "RelativeToolTip": "financeapp.api\\Utils\\Seeder.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Title": "IAssetsService.cs",
+              "DocumentMoniker": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Services\\AssetsService\\IAssetsService.cs",
+              "RelativeDocumentMoniker": "financeapp.api\\Services\\AssetsService\\IAssetsService.cs",
+              "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Services\\AssetsService\\IAssetsService.cs",
+              "RelativeToolTip": "financeapp.api\\Services\\AssetsService\\IAssetsService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-10T20:45:26.418Z",
+              "WhenOpened": "2025-03-11T13:30:40.917Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "BaseController.cs",
-              "DocumentMoniker": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Controllers\\BaseController.cs",
-              "RelativeDocumentMoniker": "financeapp.api\\Controllers\\BaseController.cs",
-              "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Controllers\\BaseController.cs",
-              "RelativeToolTip": "financeapp.api\\Controllers\\BaseController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAYAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "AssetsService.cs",
+              "DocumentMoniker": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Services\\AssetsService\\AssetsService.cs",
+              "RelativeDocumentMoniker": "financeapp.api\\Services\\AssetsService\\AssetsService.cs",
+              "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Services\\AssetsService\\AssetsService.cs",
+              "RelativeToolTip": "financeapp.api\\Services\\AssetsService\\AssetsService.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAYwFYAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-10T20:32:15.41Z",
+              "WhenOpened": "2025-03-11T13:30:39.966Z",
               "EditorCaption": ""
             },
             {
@@ -79,22 +58,9 @@
               "RelativeDocumentMoniker": "financeapp.api\\Controllers\\AssetsController.cs",
               "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Controllers\\AssetsController.cs",
               "RelativeToolTip": "financeapp.api\\Controllers\\AssetsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAswHIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-10T20:32:13.082Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AuthenticationController.cs",
-              "DocumentMoniker": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Controllers\\AuthenticationController.cs",
-              "RelativeDocumentMoniker": "financeapp.api\\Controllers\\AuthenticationController.cs",
-              "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Controllers\\AuthenticationController.cs",
-              "RelativeToolTip": "financeapp.api\\Controllers\\AuthenticationController.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAwEUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-10T20:31:42.908Z",
+              "WhenOpened": "2025-03-11T10:00:51.075Z",
               "EditorCaption": ""
             }
           ]
