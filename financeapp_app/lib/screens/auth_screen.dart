@@ -1,3 +1,4 @@
+import 'package:financeapp_app/dtos/authentication_dto.dart';
 import 'package:financeapp_app/services/auth_service.dart';
 import 'package:financeapp_app/widgets/auth_form.dart';
 import 'package:flutter/material.dart';
@@ -11,15 +12,28 @@ class AuthScreen extends StatelessWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     void login(String email, String password) async {
-      await authService.login(email, password);
+      var response = await authService.login(AuthenticationDTO(email: email, password: password));
+    
+      if (!response.success) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.message)));
+      }
     }
 
     void register(String email, String password) async {
-      await authService.register(email, password);
+      var response = await authService.register(AuthenticationDTO(email: email, password: password));
+    
+      if (!response.success) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.message)));
+      }
     }
 
     return Scaffold(
-      body: Center(child: AuthForm(onLogin: login, onRegister: register)),
+      body: Center(
+        child: AuthForm(
+          onLogin: login,
+          onRegister: register,
+        ),
+      ),
     );
   }
 }
