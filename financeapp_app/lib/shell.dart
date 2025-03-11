@@ -27,7 +27,7 @@ class _ShellState extends State<Shell> {
   Widget _buildScreen() {
     switch (_activeScreen) {
       case ActiveScreen.assets:
-        return const AssetsScreen();
+        return AssetsScreen();
       default:
         return const HomeScreen();
     }

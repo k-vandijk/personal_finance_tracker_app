@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 final ColorScheme kColorScheme = ColorScheme.fromSeed(
-  seedColor: const Color.fromARGB(255, 17, 193, 113),
+  seedColor: const Color.fromARGB(255, 0, 255, 98),
 );
 
 final ColorScheme kDarkColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
-  seedColor: const Color.fromARGB(255, 17, 193, 113),
+  seedColor: const Color.fromARGB(255, 0, 255, 98),
 );
 
 Future<void> main() async {
