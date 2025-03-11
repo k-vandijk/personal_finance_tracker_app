@@ -8,31 +8,46 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService extends ChangeNotifier {
   String? _token;
-
   bool get isAuthenticated => _token != null;
-  String? get token => _token;
 
   AuthService() {
     _loadTokenFromStorage();
   }
 
-  /// Loads the token from local storage when the service is initialized.
+  /// Loads the token and its expiry from local storage.
+  /// Only assigns the token if it has not expired.
   Future<void> _loadTokenFromStorage() async {
     final prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('jwt_token');
+    final token = prefs.getString('jwt_token');
+    final expiryString = prefs.getString('jwt_expiry');
+
+    if (token != null && expiryString != null) {
+      final expiryTime = DateTime.tryParse(expiryString);
+      if (expiryTime != null && DateTime.now().isBefore(expiryTime)) {
+        _token = token;
+        print('Token loaded from storage: $_token');
+      } else {
+        await _removeTokenFromStorage();
+        _token = null;
+        print('Token expired and removed from storage');
+      }
+    }
     notifyListeners();
   }
 
-  /// Saves the token to local storage.
+  /// Saves the token and its expiry time to local storage.
   Future<void> _saveTokenToStorage(String token) async {
     final prefs = await SharedPreferences.getInstance();
+    final expiryTime = DateTime.now().add(const Duration(minutes: tokenExpiryMinutes));
     await prefs.setString('jwt_token', token);
+    await prefs.setString('jwt_expiry', expiryTime.toIso8601String());
   }
 
-  /// Removes the token from local storage.
+  /// Removes the token and expiry time from local storage.
   Future<void> _removeTokenFromStorage() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
+    await prefs.remove('jwt_expiry');
   }
 
   /// Private helper method to perform an authentication POST request.
@@ -50,12 +65,11 @@ class AuthService extends ChangeNotifier {
         await _saveTokenToStorage(_token!);
         notifyListeners();
         return Response(message: '', success: true);
-      } 
-    
+      }
+      
       final errorMessage = 'Failed to $endpoint: ${response.body}';
       return Response(message: errorMessage, success: false);
     } 
-    
     catch (e) {
       final errorMessage = 'An error occurred while trying to $endpoint: $e';
       print(errorMessage);
