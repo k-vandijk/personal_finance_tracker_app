@@ -16,6 +16,10 @@ public class AssetsController : BaseController
     }
 
     [HttpPost("create")]
+    [ProducesResponseType<AssetDTO>(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(500)]
     public async Task<ActionResult> CreateAsset(AssetDTO dto)
     {
         if (!ModelState.IsValid)
@@ -39,6 +43,8 @@ public class AssetsController : BaseController
     }
 
     [HttpGet("getall")]
+    [ProducesResponseType<IEnumerable<AssetDTO>>(200)]
+    [ProducesResponseType(401)]
     public async Task<ActionResult<IEnumerable<AssetDTO>>> GetAssets()
     {
         var currentUser = await GetCurrentUserAsync();
@@ -52,6 +58,9 @@ public class AssetsController : BaseController
     }
 
     [HttpGet("get/{id:guid}")]
+    [ProducesResponseType<AssetDTO>(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
     public async Task<ActionResult<AssetDTO>> GetAsset(Guid id)
     {
         var currentUser = await GetCurrentUserAsync();
@@ -70,6 +79,10 @@ public class AssetsController : BaseController
     }
 
     [HttpPut("update/{id:guid}")]
+    [ProducesResponseType<AssetDTO>(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
     public async Task<ActionResult<AssetDTO>> UpdateAsset(Guid id, AssetDTO dto)
     {
         if (!ModelState.IsValid)
@@ -93,6 +106,9 @@ public class AssetsController : BaseController
     }
 
     [HttpDelete("delete/{id:guid}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
     public async Task<ActionResult> DeleteAsset(Guid id)
     {
         var currentUser = await GetCurrentUserAsync();

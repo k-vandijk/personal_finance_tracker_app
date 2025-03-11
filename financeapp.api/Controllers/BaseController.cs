@@ -14,6 +14,7 @@ public class BaseController : Controller
         _context = context;
     }
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User> GetCurrentUserAsync()
     {
         var emailClaim = User?.FindFirst(ClaimTypes.Email)?.Value;
