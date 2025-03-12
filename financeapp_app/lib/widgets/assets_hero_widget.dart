@@ -10,6 +10,7 @@ class AssetsHeroWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 100,
+      width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
