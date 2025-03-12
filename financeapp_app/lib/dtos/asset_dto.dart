@@ -1,5 +1,5 @@
 class AssetDTO {
-  final String id;
+  final String? id;
   final String categoryId;
   final String name;
   final String? description;
@@ -9,12 +9,12 @@ class AssetDTO {
   final double? salePrice;
   final double? fictionalPrice;
 
-  AssetDTO(
+  AssetDTO({
     this.id,
-    this.categoryId,
-    this.name,
-    this.purchaseDate,
-    this.purchasePrice, {
+    required this.categoryId,
+    required this.name,
+    required this.purchaseDate,
+    required this.purchasePrice,
     this.description,
     this.saleDate,
     this.salePrice,
@@ -24,36 +24,44 @@ class AssetDTO {
   /// Creates a new instance of AssetDTO from a JSON map.
   factory AssetDTO.fromJson(Map<String, dynamic> json) {
     return AssetDTO(
-      json['id'] as String,
-      json['categoryId'] as String,
-      json['name'] as String,
-      DateTime.parse(json['purchaseDate'] as String),
-      (json['purchasePrice'] as num).toDouble(),
-      description: json['description'] as String?,
-      saleDate: json['saleDate'] == null
-          ? null
-          : DateTime.parse(json['saleDate'] as String),
-      salePrice: json['salePrice'] == null
-          ? null
-          : (json['salePrice'] as num).toDouble(),
-      fictionalPrice: json['fictionalPrice'] == null
-          ? null
-          : (json['fictionalPrice'] as num).toDouble(),
+      id: json['id'],
+      categoryId: json['categoryId'],
+      name: json['name'],
+      description: json['description'],
+      purchaseDate: DateTime.parse(json['purchaseDate']),
+      saleDate: json['saleDate'] != null ? DateTime.parse(json['saleDate']) : null,
+      purchasePrice: json['purchasePrice'],
+      salePrice: json['salePrice'],
+      fictionalPrice: json['fictionalPrice'],
     );
   }
+}
 
-  /// Converts this AssetDTO instance into a JSON map.
+class CreateAssetDTO {
+  final String name;
+  final String description;
+  final double purchasePrice;
+  final DateTime purchaseDate;
+  final double fictionalPrice;
+  final String categoryId;
+
+  CreateAssetDTO({
+    required this.name,
+    required this.description,
+    required this.purchasePrice,
+    required this.purchaseDate,
+    required this.fictionalPrice,
+    required this.categoryId,
+  });
+
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'categoryId': categoryId,
       'name': name,
       'description': description,
-      'purchaseDate': purchaseDate.toIso8601String(),
-      'saleDate': saleDate?.toIso8601String(),
       'purchasePrice': purchasePrice,
-      'salePrice': salePrice,
+      'purchaseDate': purchaseDate.toIso8601String(),
       'fictionalPrice': fictionalPrice,
+      'categoryId': categoryId,
     };
   }
 }

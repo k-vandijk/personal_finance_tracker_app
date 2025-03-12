@@ -15,6 +15,7 @@ class AuthScreen extends StatelessWidget {
       var response = await authService.loginAsync(AuthRequest(email: email, password: password));
     
       if (response.statusCode != 200) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.body)));
       }
     }
@@ -23,6 +24,7 @@ class AuthScreen extends StatelessWidget {
       var response = await authService.registerAsync(AuthRequest(email: email, password: password));
     
       if (response.statusCode != 200) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.body)));
       }
     }

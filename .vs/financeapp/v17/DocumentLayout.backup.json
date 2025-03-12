@@ -1,12 +1,37 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\kevin\\repos\\financeapp\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|c:\\users\\kevin\\repos\\financeapp\\financeapp.api\\profiles\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0EE5D672-7D86-40C7-8E05-8023F0DDEBC0}|financeapp.api\\financeapp.api.csproj|solutionrelative:financeapp.api\\profiles\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MappingProfile.cs",
+              "DocumentMoniker": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Profiles\\MappingProfile.cs",
+              "RelativeDocumentMoniker": "financeapp.api\\Profiles\\MappingProfile.cs",
+              "ToolTip": "C:\\Users\\kevin\\repos\\financeapp\\financeapp.api\\Profiles\\MappingProfile.cs",
+              "RelativeToolTip": "financeapp.api\\Profiles\\MappingProfile.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-12T12:27:23.918Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
