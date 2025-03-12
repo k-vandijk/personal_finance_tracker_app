@@ -1,26 +1,32 @@
+import 'package:financeapp_app/services/auth_service.dart';
+import 'package:financeapp_app/shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:financeapp_app/shell.dart';
+import 'package:provider/provider.dart';
 
-ColorScheme kColorScheme = ColorScheme.fromSeed(
-  seedColor: const Color.fromARGB(255, 24, 182, 193),
+final ColorScheme kColorScheme = ColorScheme.fromSeed(
+  seedColor: const Color.fromARGB(255, 0, 255, 98),
 );
 
-ColorScheme kDarkColorScheme = ColorScheme.fromSeed(
+final ColorScheme kDarkColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
-  seedColor: const Color.fromARGB(255, 24, 182, 193),
+  seedColor: const Color.fromARGB(255, 0, 255, 98),
 );
 
 Future<void> main() async {
-
+  
+  // Ensure that the app is in portrait mode.
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(
-    MaterialApp(
-      theme: ThemeData().copyWith(colorScheme: kColorScheme),
-      darkTheme: ThemeData.dark().copyWith(colorScheme: kDarkColorScheme),
-      home: const Shell(),
+    ChangeNotifierProvider(
+      create: (_) => AuthService(),
+      child: MaterialApp(
+        theme: ThemeData().copyWith(colorScheme: kColorScheme),
+        darkTheme: ThemeData.dark().copyWith(colorScheme: kDarkColorScheme),
+        home: const Shell(),
+      ),
     ),
   );
 }
