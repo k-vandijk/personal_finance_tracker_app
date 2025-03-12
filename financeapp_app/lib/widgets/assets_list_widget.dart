@@ -26,7 +26,7 @@ class AssetsListWidget extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onTapAdd,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
+        backgroundColor: Theme.of(context).colorScheme.tertiary.withAlpha(200),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         minimumSize: const Size(0, 0),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Verkleint de knop
@@ -34,11 +34,11 @@ class AssetsListWidget extends StatelessWidget {
       icon: Icon(
         Icons.add,
         size: 16,
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
       label: Text(
         'Add',
-        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondaryContainer),
+        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onTertiary),
       ),
     );
   }

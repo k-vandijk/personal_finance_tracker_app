@@ -9,7 +9,6 @@ import 'package:financeapp_app/widgets/assets_hero_widget.dart';
 import 'package:financeapp_app/widgets/assets_list_widget.dart';
 import 'package:flutter/material.dart';
 
-// TODO Create assets graph
 // TODO Edit asset
 // TODO BUG als je komma gebruikt bij double, krijg je een error
 // TODO Optimistic update, toon de nieuwe asset direct in de lijst.
@@ -135,7 +134,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            const AssetsGraphWidget(),
+            AssetsGraphWidget(assets: filteredAssets),
             const SizedBox(height: 16),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
