@@ -37,16 +37,13 @@ class AssetsCategoriesListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
-    final Color textColor = Theme.of(context).colorScheme.onSecondaryContainer;
-
     return SizedBox(
       width: 120,
       child: InkWell(
         onTap: () => onCategoryTapped(categoryTotal.id),
         borderRadius: BorderRadius.circular(20),
         child: Card(
-          color: backgroundColor,
+          color: Theme.of(context).colorScheme.secondaryContainer,
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
