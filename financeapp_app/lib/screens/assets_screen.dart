@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 // TODO BUG als je komma gebruikt bij double, krijg je een error
 // TODO Optimistic update, toon de nieuwe asset direct in de lijst.
 // TODO Edit asset
-// TODO Delete asset
 // TODO Filter assets by category
 // TODO Create assets graph
 
@@ -30,31 +29,34 @@ class _AssetsScreenState extends State<AssetsScreen> {
   @override
   void initState() {
     super.initState();
-    _dataFuture = _fetchAssetsAndCategories();
+    _dataFuture = _fetchAssetsAndCategoriesAsync();
   }
 
-  Future<List<AssetDTO>> _fetchAssets() async {
+  // Fetch methods
+  Future<List<AssetDTO>> _fetchAssetsAsync() async {
     final assetsResponse = await _assetsService.getAllAssetsAsync();
     final assetsJson = assetsResponse.body.trim().isEmpty ? [] : jsonDecode(assetsResponse.body) as List<dynamic>;
     return assetsJson.map((json) => AssetDTO.fromJson(json)).toList();
   }
 
-  Future<List<CategoryDTO>> _fetchCategories() async {
+  Future<List<CategoryDTO>> _fetchCategoriesAsync() async {
     final categoriesResponse = await _assetsService.getAllCategoriesAsync();
     final categoriesJson = categoriesResponse.body.trim().isEmpty ? [] : jsonDecode(categoriesResponse.body) as List<dynamic>;
     return categoriesJson.map((json) => CategoryDTO.fromJson(json)).toList();
   }
 
-  Future<Map<String, dynamic>> _fetchAssetsAndCategories() async {
-    final assets = await _fetchAssets();
-    final categories = await _fetchCategories();
+  Future<Map<String, dynamic>> _fetchAssetsAndCategoriesAsync() async {
+    final assets = await _fetchAssetsAsync();
+    final categories = await _fetchCategoriesAsync();
     return {'assets': assets, 'categories': categories};
   }
 
+  // Helper methods
   double _getTotal(List<AssetDTO> assets) {
     return assets.fold(0.0, (sum, asset) => sum + asset.purchasePrice);
   }
 
+  // Feature methods
   Future<void> _addAssetAsync(CreateAssetDTO asset) async {
     final response = await _assetsService.addAssetAsync(asset);
     if (response.statusCode != 200) {
@@ -64,7 +66,20 @@ class _AssetsScreenState extends State<AssetsScreen> {
     }
 
     setState(() {
-      _dataFuture = _fetchAssetsAndCategories();
+      _dataFuture = _fetchAssetsAndCategoriesAsync();
+    });
+  }
+
+  Future<void> _deleteAssetAsync(String id) async {
+    final response = await _assetsService.deleteAssetAsync(id);
+    if (response.statusCode != 200) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.body)));
+      return;
+    }
+
+    setState(() {
+      _dataFuture = _fetchAssetsAndCategoriesAsync();
     });
   }
 
@@ -108,6 +123,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
               assets: assets,
               categories: categories,
               onTapAdd: openAddAssetModal,
+              onSwipeLeft: (id) => _deleteAssetAsync(id),
             ),
           ],
         );

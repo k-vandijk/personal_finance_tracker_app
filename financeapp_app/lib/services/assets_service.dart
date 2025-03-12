@@ -21,4 +21,9 @@ class AssetsService {
     final response = await _httpService.postAsync('assets/create', body: asset);
     return response;
   }
+
+  Future<Response> deleteAssetAsync(String id) async {
+    final response = await _httpService.deleteAsync('assets/delete/$id');
+    return response;
+  }
 }

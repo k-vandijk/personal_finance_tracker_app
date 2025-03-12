@@ -4,19 +4,47 @@ import 'package:financeapp_app/widgets/assets_list_item_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsListWidget extends StatelessWidget {
-  const AssetsListWidget({super.key, required this.assets, required this.categories, required this.onTapAdd});
+  const AssetsListWidget({super.key, required this.assets, required this.categories, 
+                            required this.onTapAdd, required this.onSwipeLeft});
 
   final List<AssetDTO> assets;
   final List<CategoryDTO> categories;
   List<AssetDTO> get sortedAssets => List<AssetDTO>.from(assets)..sort((a, b) => b.purchaseDate.compareTo(a.purchaseDate));
 
   final void Function() onTapAdd;
+  final void Function(String) onSwipeLeft;
+
+  /// Widgets
+  Widget _buildAssetsLabelText(BuildContext context) {
+    return const Text(
+      'Assets',
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildAddAssetButton(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: onTapAdd,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        minimumSize: const Size(0, 0),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Verkleint de knop
+      ),
+      icon: Icon(
+        Icons.add,
+        size: 16,
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+      ),
+      label: Text(
+        'Add',
+        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondaryContainer),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Color buttonBackgroundColor = Theme.of(context).colorScheme.secondaryContainer.withAlpha(120);
-    final Color buttonTextColor = Theme.of(context).colorScheme.onSecondaryContainer;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
@@ -25,28 +53,8 @@ class AssetsListWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
-                'Assets',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              ElevatedButton.icon(
-                onPressed: onTapAdd,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonBackgroundColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  minimumSize: const Size(0, 0),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Verkleint de knop
-                ),
-                icon: Icon(
-                  Icons.add,
-                  size: 16,
-                  color: buttonTextColor,
-                ),
-                label: Text(
-                  'Add',
-                  style: TextStyle(fontSize: 14, color: buttonTextColor),
-                ),
-              ),
+              _buildAssetsLabelText(context),
+              _buildAddAssetButton(context)
             ],
           ),
           const SizedBox(height: 8),
@@ -60,7 +68,7 @@ class AssetsListWidget extends StatelessWidget {
                 (c) => c.id == asset.categoryId,
                 orElse: () => CategoryDTO('0', 'Unknown'),
               );
-              return AssetsListItemWidget(asset: asset, category: category);
+              return AssetsListItemWidget(asset: asset, category: category, onSwipeLeft: (id) => onSwipeLeft(id));
             },
           ),
         ],
