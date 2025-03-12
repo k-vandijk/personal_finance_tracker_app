@@ -1,6 +1,7 @@
 using financeapp.api;
 using financeapp.api.Profiles;
 using financeapp.api.Services.AssetsService;
+using financeapp.api.Services.CategoriesService;
 using financeapp.api.Services.HashingService;
 using financeapp.api.Services.JwtService;
 using financeapp.api.Utils;
@@ -43,6 +44,7 @@ builder.Services.AddNpgsql<DataContext>(builder.Configuration.GetConnectionStrin
 
 // Add Services
 builder.Services.AddScoped<IAssetsService, AssetsService>();
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
