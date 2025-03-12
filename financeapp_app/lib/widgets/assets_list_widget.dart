@@ -16,7 +16,8 @@ class AssetsListWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Assets'),
+          const Text('Assets', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
           ListView.builder(
             shrinkWrap: true, // Expands the ListView to the height of its content.
             physics: const NeverScrollableScrollPhysics(), // Disables scrolling.

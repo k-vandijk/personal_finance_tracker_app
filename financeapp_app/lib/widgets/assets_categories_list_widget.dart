@@ -32,7 +32,9 @@ class AssetsCategoriesListWidget extends StatelessWidget {
       final total = categoryAssets.fold<double>(0.0, (sum, asset) => sum + asset.purchasePrice);
       totals.add(CategoryTotal(category.name, total));
     }
-    return totals;
+    
+    // Return the list of category totals ordered by total amount
+    return totals..sort((a, b) => b.total.compareTo(a.total));
   }
 
   @override
@@ -42,7 +44,11 @@ class AssetsCategoriesListWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Categories'),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text('Categories', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,

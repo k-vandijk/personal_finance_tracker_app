@@ -15,70 +15,51 @@ class AssetsListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: ValueKey(asset.id),
-      background: Container(
-        color: Theme.of(context).colorScheme.error,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {},
-      child: Card(
-        color: Theme.of(context).colorScheme.inverseSurface,
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: ListTile(
-          dense: true,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 4,
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  asset.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                ),
-              ),
-              Text(
-                formatCurrency(asset.purchasePrice),
+    final Color backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
+    final Color textColor = Theme.of(context).colorScheme.onSecondaryContainer;
+
+    return Card(
+      color: backgroundColor,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                asset.name,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
               ),
-            ],
-          ),
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                category.name,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
+            ),
+            Text(
+              formatCurrency(asset.purchasePrice),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: textColor,
               ),
-              Text(
-                formatDateTime(asset.purchaseDate),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
+        ),
+        subtitle: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              category.name,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+            Text(
+              formatDateTime(asset.purchaseDate),
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+          ],
         ),
       ),
     );

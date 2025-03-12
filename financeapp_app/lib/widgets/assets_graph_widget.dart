@@ -5,6 +5,9 @@ class AssetsGraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(height: 300, child: Text('Assets Graph!'));
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: SizedBox(height: 300, child: Text('Assets Graph', style: TextStyle(fontWeight: FontWeight.bold),)),
+    );
   }
 }

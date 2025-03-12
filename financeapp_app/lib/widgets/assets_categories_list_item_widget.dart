@@ -12,12 +12,15 @@ class AssetsCategoriesListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
+    final Color textColor = Theme.of(context).colorScheme.onSecondaryContainer;
+
     return SizedBox(
       width: 120,
       child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        color: Theme.of(context).colorScheme.inverseSurface,
+        color: backgroundColor,
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           child: Column(
@@ -26,20 +29,22 @@ class AssetsCategoriesListItemWidget extends StatelessWidget {
               Text(
                 categoryTotal.name,
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 formatCurrency(categoryTotal.total),
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
               ),
             ],
