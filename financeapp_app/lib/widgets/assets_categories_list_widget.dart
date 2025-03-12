@@ -39,13 +39,21 @@ class AssetsCategoriesListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: categoryTotals.length,
-        itemBuilder: (context, index) {
-          final categoryTotal = categoryTotals[index];
-          return AssetsCategoriesListItemWidget(categoryTotal: categoryTotal);
-        },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Categories'),
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: categoryTotals.length,
+              itemBuilder: (context, index) {
+                final categoryTotal = categoryTotals[index];
+                return AssetsCategoriesListItemWidget(categoryTotal: categoryTotal);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

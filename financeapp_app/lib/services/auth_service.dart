@@ -1,42 +1,48 @@
-import 'dart:convert';
 import 'package:financeapp_app/config.dart';
-import 'package:financeapp_app/dtos/authentication_dto.dart';
-import 'package:financeapp_app/dtos/response_dto.dart';
+import 'package:financeapp_app/dtos/auth_request.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:financeapp_app/services/http_service.dart';
 
 class AuthService extends ChangeNotifier {
   String? _token;
   bool get isAuthenticated => _token != null;
 
+  final HttpService _httpService = HttpService();
+
   AuthService() {
-    _loadTokenFromStorage();
+    _getTokenFromStorage();
   }
 
-  /// Loads the token and its expiry from local storage.
-  /// Only assigns the token if it has not expired.
-  Future<void> _loadTokenFromStorage() async {
+  Future<void> _getTokenFromStorage() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
     final expiryString = prefs.getString('jwt_expiry');
 
-    if (token != null && expiryString != null) {
-      final expiryTime = DateTime.tryParse(expiryString);
-      if (expiryTime != null && DateTime.now().isBefore(expiryTime)) {
-        _token = token;
-        print('Token loaded from storage: $_token');
-      } else {
-        await _removeTokenFromStorage();
-        _token = null;
-        print('Token expired and removed from storage');
-      }
+    if (_isTokenValid(token, expiryString)) {
+      _token = token;
+      notifyListeners();
+    } else {
+      await _removeTokenFromStorageAsync();
     }
-    notifyListeners();
+  }
+
+  bool _isTokenValid(String? token, String? expiryString) {
+    if (token == null || expiryString == null) {
+      return false;
+    }
+
+    final expiryTime = DateTime.tryParse(expiryString);
+    if (expiryTime != null && DateTime.now().isBefore(expiryTime)) {
+      return true;
+    }
+
+    return false;
   }
 
   /// Saves the token and its expiry time to local storage.
-  Future<void> _saveTokenToStorage(String token) async {
+  Future<void> _saveTokenToStorageAsync(String token) async {
     final prefs = await SharedPreferences.getInstance();
     final expiryTime = DateTime.now().add(const Duration(minutes: tokenExpiryMinutes));
     await prefs.setString('jwt_token', token);
@@ -44,50 +50,41 @@ class AuthService extends ChangeNotifier {
   }
 
   /// Removes the token and expiry time from local storage.
-  Future<void> _removeTokenFromStorage() async {
+  Future<void> _removeTokenFromStorageAsync() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
     await prefs.remove('jwt_expiry');
   }
 
-  /// Private helper method to perform an authentication POST request.
-  Future<Response> _authRequest(String endpoint, AuthenticationDTO dto) async {
-    try {
-      final url = Uri.parse('$baseUrl/$endpoint');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(dto.toJson()),
-      );
+  Future<void> _handleAuthenticationAsync (String token) async {
+    _token = token;
+    await _saveTokenToStorageAsync(token);
+    notifyListeners();
+  }
 
-      if (response.statusCode == 200) {
-        _token = response.body;
-        await _saveTokenToStorage(_token!);
-        notifyListeners();
-        return Response(message: '', success: true);
-      }
-      
-      final errorMessage = 'Failed to $endpoint: ${response.body}';
-      return Response(message: errorMessage, success: false);
-    } 
-    catch (e) {
-      final errorMessage = 'An error occurred while trying to $endpoint: $e';
-      print(errorMessage);
-      return Response(message: errorMessage, success: false);
+  Future<Response> loginAsync(AuthRequest dto) async {
+    var response = await _httpService.postAsync('login', body: dto);
+    if (response.statusCode != 200) {
+      return response;
     }
+
+    await _handleAuthenticationAsync(response.body);
+    return response;
   }
 
-  Future<Response> login(AuthenticationDTO dto) async {
-    return await _authRequest('login', dto);
+  Future<Response> registerAsync(AuthRequest dto) async {
+    var response = await _httpService.postAsync('register', body: dto);
+    if (response.statusCode != 200) {
+      return response;
+    }
+    
+    await _handleAuthenticationAsync(response.body);
+    return response;
   }
 
-  Future<Response> register(AuthenticationDTO dto) async {
-    return await _authRequest('register', dto);
-  }
-
-  Future<void> logout() async {
+  Future<void> logoutAsync() async {
     _token = null;
-    await _removeTokenFromStorage();
+    await _removeTokenFromStorageAsync();
     notifyListeners();
   }
 }

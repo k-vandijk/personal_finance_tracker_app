@@ -4,27 +4,32 @@ import 'package:financeapp_app/widgets/assets_list_item_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsListWidget extends StatelessWidget {
-  const AssetsListWidget({
-    super.key,
-    required this.assets,
-    required this.categories,
-  });
+  const AssetsListWidget({super.key, required this.assets, required this.categories});
 
   final List<AssetDTO> assets;
   final List<CategoryDTO> categories;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true, // Ensures the ListView only takes up the needed height.
-      physics: const NeverScrollableScrollPhysics(), // Disable scrolling for this inner ListView.
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Assets'),
+          ListView.builder(
+            shrinkWrap: true, // Expands the ListView to the height of its content.
+            physics: const NeverScrollableScrollPhysics(), // Disables scrolling.
 
-      itemCount: assets.length,
-      itemBuilder: (ctx, index) {
-        final asset = assets[index];
-        final category = categories.firstWhere((c) => c.id == asset.categoryId);
-        return AssetsListItemWidget(asset: asset, category: category);
-      },
+            itemCount: assets.length,
+            itemBuilder: (ctx, index) {
+              final asset = assets[index];
+              final category = categories.firstWhere((c) => c.id == asset.categoryId);
+              return AssetsListItemWidget(asset: asset, category: category);
+            },
+          ),
+        ],
+      ),
     );
   }
 }
