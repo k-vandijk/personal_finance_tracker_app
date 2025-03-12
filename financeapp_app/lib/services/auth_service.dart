@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:financeapp_app/config.dart';
 import 'package:financeapp_app/dtos/auth_request.dart';
 import 'package:flutter/material.dart';
@@ -56,14 +58,19 @@ class AuthService extends ChangeNotifier {
     await prefs.remove('jwt_expiry');
   }
 
-  Future<void> _handleAuthenticationAsync (String token) async {
+  Future<void> _handleAuthenticationAsync (String responseBody) async {
+    // Parse the token from the response body
+    final tokenObject = jsonDecode(responseBody) as Map<String, dynamic>;
+    final token = tokenObject['token'] as String;
+
+    // Save the token...    
     _token = token;
     await _saveTokenToStorageAsync(token);
     notifyListeners();
   }
 
   Future<Response> loginAsync(AuthRequest dto) async {
-    var response = await _httpService.postAsync('login', body: dto);
+    var response = await _httpService.postAsync('auth/login', body: dto);
     if (response.statusCode != 200) {
       return response;
     }
@@ -73,7 +80,7 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<Response> registerAsync(AuthRequest dto) async {
-    var response = await _httpService.postAsync('register', body: dto);
+    var response = await _httpService.postAsync('auth/register', body: dto);
     if (response.statusCode != 200) {
       return response;
     }

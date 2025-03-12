@@ -24,7 +24,11 @@ class AssetsListWidget extends StatelessWidget {
             itemCount: assets.length,
             itemBuilder: (ctx, index) {
               final asset = assets[index];
-              final category = categories.firstWhere((c) => c.id == asset.categoryId);
+              final category = categories.firstWhere(
+                (c) => c.id == asset.categoryId,
+                orElse: () => CategoryDTO('0', 'Unknown'),
+              );
+
               return AssetsListItemWidget(asset: asset, category: category);
             },
           ),

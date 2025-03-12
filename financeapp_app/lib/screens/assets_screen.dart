@@ -1,58 +1,84 @@
+import 'dart:convert';
 import 'package:financeapp_app/dtos/asset_dto.dart';
 import 'package:financeapp_app/dtos/category_dto.dart';
+import 'package:financeapp_app/services/assets_service.dart';
 import 'package:financeapp_app/widgets/assets_categories_list_widget.dart';
 import 'package:financeapp_app/widgets/assets_graph_widget.dart';
 import 'package:financeapp_app/widgets/assets_hero_widget.dart';
 import 'package:financeapp_app/widgets/assets_list_widget.dart';
 import 'package:flutter/material.dart';
 
-// TODO get the assets and categories from the database
-// TODO add add asset button and modal
-// TODO add delete asset functionality
-// TODO add edit asset functionality
-// TODO create graph widget
+class AssetsScreen extends StatefulWidget {
+  const AssetsScreen({Key? key}) : super(key: key);
 
-class AssetsScreen extends StatelessWidget {
-  AssetsScreen({super.key});
+  @override
+  _AssetsScreenState createState() => _AssetsScreenState();
+}
 
-  final List<AssetDTO> assets = [
-    AssetDTO('1', '1', 'Fender American Vintage \'65 Stratocaster', DateTime.now(), 1250.00),
-    AssetDTO('2', '1', 'Eastman E1D', DateTime.now(), 619.00),
-    AssetDTO('3', '1', 'Fender American Vintage \'61 Stratocaster', DateTime.now(), 2198.00),
-    AssetDTO('4', '1', 'Tokai LS48', DateTime.now(), 375.00),
-    AssetDTO('5', '2', 'Boss Katana 50 MKII', DateTime.now(), 249.00),
-    AssetDTO('6', '2', 'Marshall JCM 800 2203x', DateTime.now(), 1050.00),
-    AssetDTO('7', '2', 'Marshall 1960A', DateTime.now(), 250.00),
-    AssetDTO('8', '2', 'Marshall 1960A', DateTime.now(), 225.00),
-    AssetDTO('9', '2', 'Marshall Silver Jubilee 2555x', DateTime.now(), 800.00),
-  ];
+class _AssetsScreenState extends State<AssetsScreen> {
+  late Future<Map<String, dynamic>> _dataFuture;
+  final AssetsService _assetsService = AssetsService();
 
-  final List<CategoryDTO> categories = [
-    CategoryDTO('1', 'Guitars'),
-    CategoryDTO('2', 'Amplifiers'),
-    CategoryDTO('3', 'Pedals'),
-    CategoryDTO('4', 'Synthesizers'),
-    CategoryDTO('5', 'Other'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = _fetchAssetsAndCategories();
+  }
 
-  double get _total => _getTotal(assets);
+  /// Haalt assets en categorieën op van de server en converteert ze naar DTO's.
+  /// Als de response body leeg is, wordt een lege lijst gebruikt.
+  Future<Map<String, dynamic>> _fetchAssetsAndCategories() async {
+    final assetsResponse = await _assetsService.getAllAssets();
+    final categoriesResponse = await _assetsService.getAllCategories();
+
+    // Controleer of de response body leeg is, gebruik dan een lege lijst
+    final assetsJson = assetsResponse.body.trim().isEmpty
+        ? []
+        : jsonDecode(assetsResponse.body) as List<dynamic>;
+    final categoriesJson = categoriesResponse.body.trim().isEmpty
+        ? []
+        : jsonDecode(categoriesResponse.body) as List<dynamic>;
+
+    final assets =
+        assetsJson.map((json) => AssetDTO.fromJson(json)).toList();
+    final categories =
+        categoriesJson.map((json) => CategoryDTO.fromJson(json)).toList();
+
+    return {'assets': assets, 'categories': categories};
+  }
 
   double _getTotal(List<AssetDTO> assets) {
-    return assets.fold<double>(0.0, (sum, asset) => sum + asset.purchasePrice);
+    return assets.fold(0.0, (sum, asset) => sum + asset.purchasePrice);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        AssetsHeroWidget(amount: _total),
-        const SizedBox(height: 16),
-        const AssetsGraphWidget(),
-        const SizedBox(height: 16),
-        AssetsCategoriesListWidget(assets: assets, categories: categories),
-        const SizedBox(height: 16),
-        AssetsListWidget(assets: assets, categories: categories),
-      ],
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _dataFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final assets = snapshot.data?['assets'] as List<AssetDTO>;
+        final categories = snapshot.data?['categories'] as List<CategoryDTO>;
+        final total = _getTotal(assets);
+
+        return ListView(
+          children: [
+            AssetsHeroWidget(amount: total),
+            const SizedBox(height: 16),
+            const AssetsGraphWidget(),
+            const SizedBox(height: 16),
+            AssetsCategoriesListWidget(assets: assets, categories: categories),
+            const SizedBox(height: 16),
+            AssetsListWidget(assets: assets, categories: categories),
+          ],
+        );
+      },
     );
   }
 }
