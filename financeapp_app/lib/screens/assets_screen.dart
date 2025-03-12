@@ -9,11 +9,11 @@ import 'package:financeapp_app/widgets/assets_hero_widget.dart';
 import 'package:financeapp_app/widgets/assets_list_widget.dart';
 import 'package:flutter/material.dart';
 
-// TODO BUG als je komma gebruikt bij double, krijg je een error
-// TODO Optimistic update, toon de nieuwe asset direct in de lijst.
-// TODO Edit asset
 // TODO Filter assets by category
 // TODO Create assets graph
+// TODO Edit asset
+// TODO BUG als je komma gebruikt bij double, krijg je een error
+// TODO Optimistic update, toon de nieuwe asset direct in de lijst.
 
 class AssetsScreen extends StatefulWidget {
   const AssetsScreen({super.key});
@@ -25,6 +25,8 @@ class AssetsScreen extends StatefulWidget {
 class _AssetsScreenState extends State<AssetsScreen> {
   late Future<Map<String, dynamic>> _dataFuture;
   final AssetsService _assetsService = AssetsService();
+
+  String? _selectedCategoryId;
 
   @override
   void initState() {
@@ -51,12 +53,12 @@ class _AssetsScreenState extends State<AssetsScreen> {
     return {'assets': assets, 'categories': categories};
   }
 
-  // Helper methods
+  // Helper method to compute the total purchase price.
   double _getTotal(List<AssetDTO> assets) {
     return assets.fold(0.0, (sum, asset) => sum + asset.purchasePrice);
   }
 
-  // Feature methods
+  // Feature method for adding a new asset.
   Future<void> _addAssetAsync(CreateAssetDTO asset) async {
     final response = await _assetsService.addAssetAsync(asset);
     if (response.statusCode != 200) {
@@ -70,6 +72,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
     });
   }
 
+  // Feature method for deleting an asset.
   Future<void> _deleteAssetAsync(String id) async {
     final response = await _assetsService.deleteAssetAsync(id);
     if (response.statusCode != 200) {
@@ -83,31 +86,57 @@ class _AssetsScreenState extends State<AssetsScreen> {
     });
   }
 
+  // Toggle the selected category for filtering.
+  void _onCategoryTapped(String categoryId) {
+    setState(() {
+      // If the tapped category is already selected, clear the filter.
+      if (_selectedCategoryId == categoryId) {
+        _selectedCategoryId = null;
+      } else {
+        _selectedCategoryId = categoryId;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
       future: _dataFuture,
       builder: (context, snapshot) {
-
-        // Als de data nog aan het laden is, toon dan een loading indicator.
+        // Show loading indicator while data is being fetched.
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // Als er een error is opgetreden, toon dan een error melding.
+        // Display error message if an error occurs.
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        final assets = snapshot.data?['assets'] as List<AssetDTO>;
-        final categories = snapshot.data?['categories'] as List<CategoryDTO>;
-        final total = _getTotal(assets);
+        // Retrieve full lists from the snapshot.
+        final allAssets = snapshot.data?['assets'] as List<AssetDTO>;
+        final allCategories = snapshot.data?['categories'] as List<CategoryDTO>;
+
+        // Apply filtering based on the selected category.
+        final filteredAssets = _selectedCategoryId == null
+            ? allAssets
+            : allAssets.where((asset) => asset.categoryId == _selectedCategoryId).toList();
+            
+        final filteredCategories = _selectedCategoryId == null
+            ? allCategories
+            : allCategories.where((category) => category.id == _selectedCategoryId).toList();
+
+        final total = _getTotal(filteredAssets);
 
         void openAddAssetModal() {
           showModalBottomSheet(
             context: context,
-            isScrollControlled: true, // Zorgt ervoor dat de modal goed schaalt bij toetsenbord
-            builder: (ctx) => AddAssetModal(ctx: ctx, categories: categories, onAddAsset: _addAssetAsync),
+            isScrollControlled: true, // Ensures proper scaling with the keyboard.
+            builder: (ctx) => AddAssetModal(
+              ctx: ctx,
+              categories: allCategories,
+              onAddAsset: _addAssetAsync,
+            ),
           );
         }
 
@@ -117,11 +146,15 @@ class _AssetsScreenState extends State<AssetsScreen> {
             const SizedBox(height: 16),
             const AssetsGraphWidget(),
             const SizedBox(height: 16),
-            AssetsCategoriesListWidget(assets: assets, categories: categories),
+            AssetsCategoriesListWidget(
+              assets: filteredAssets,
+              categories: filteredCategories,
+              onCategoryTapped: _onCategoryTapped,
+            ),
             const SizedBox(height: 16),
             AssetsListWidget(
-              assets: assets,
-              categories: categories,
+              assets: filteredAssets,
+              categories: filteredCategories,
               onTapAdd: openAddAssetModal,
               onSwipeLeft: (id) => _deleteAssetAsync(id),
             ),
