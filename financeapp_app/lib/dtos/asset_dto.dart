@@ -21,6 +21,8 @@ class AssetDTO {
     this.fictionalPrice,
   });
 
+  bool get isSold => saleDate != null;
+
   /// Creates a new instance of AssetDTO from a JSON map.
   factory AssetDTO.fromJson(Map<String, dynamic> json) {
     return AssetDTO(

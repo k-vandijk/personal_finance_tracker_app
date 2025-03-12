@@ -13,11 +13,12 @@ String formatCurrency(double amount) {
 // Format a double to a string in the format '€ 1k'
 String formatCurrencyShort(double amount) {
   if (amount < 1000) {
-    return formatCurrency(amount);
+    final rounded = (amount / 100).round() * 100;
+    return '€ ${(rounded / 1000).toStringAsFixed(1)}k'.replaceAll('.', ',');
   } else if (amount < 1000000) {
-    return '€ ${(amount / 1000).toStringAsFixed(0)}k';
+    return '€ ${(amount / 1000).toStringAsFixed(0)}k'.replaceAll('.', ',');
   } else {
-    return '€ ${(amount / 1000000).toStringAsFixed(0)}M';
+    return '€ ${(amount / 1000000).toStringAsFixed(0)}M'.replaceAll('.', ',');
   }
 }
 

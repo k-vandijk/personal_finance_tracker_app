@@ -72,7 +72,9 @@ class AssetsListItemWidget extends StatelessWidget {
       background: _buildDismissibleContainer(context),
       onDismissed: (_) => onSwipeLeft(asset.id!),
       child: Card(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: !asset.isSold 
+          ? Theme.of(context).colorScheme.secondaryContainer 
+          : Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(120),
         margin: const EdgeInsets.symmetric(vertical: 4),
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

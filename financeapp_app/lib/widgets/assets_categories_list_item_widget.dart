@@ -3,9 +3,12 @@ import 'package:financeapp_app/widgets/assets_categories_list_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsCategoriesListItemWidget extends StatelessWidget {
-  const AssetsCategoriesListItemWidget({super.key, required this.categoryTotal, required this.onCategoryTapped});
+  const AssetsCategoriesListItemWidget({super.key, required this.categoryTotal, required this.onCategoryTapped, required this.selectedCategoryId});
 
   final CategoryTotal categoryTotal;
+  final String? selectedCategoryId;
+
+  bool get isSelected => categoryTotal.id == selectedCategoryId;
 
   final void Function(String) onCategoryTapped;
 
@@ -43,7 +46,9 @@ class AssetsCategoriesListItemWidget extends StatelessWidget {
         onTap: () => onCategoryTapped(categoryTotal.id),
         borderRadius: BorderRadius.circular(20),
         child: Card(
-          color: Theme.of(context).colorScheme.secondaryContainer,
+          color: isSelected 
+            ? Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(120)
+            : Theme.of(context).colorScheme.secondaryContainer,
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(

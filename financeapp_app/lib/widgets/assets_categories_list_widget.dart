@@ -12,10 +12,13 @@ class CategoryTotal {
 }
 
 class AssetsCategoriesListWidget extends StatelessWidget {
-  const AssetsCategoriesListWidget({super.key, required this.assets, required this.categories, required this.onCategoryTapped});
+  const AssetsCategoriesListWidget({super.key, required this.assets, required this.categories, 
+                                    required this.onCategoryTapped, required this.selectedCategoryId});
 
   final List<AssetDTO> assets;
   final List<CategoryDTO> categories;
+  final String? selectedCategoryId;
+
   List<CategoryTotal> get categoryTotals => _getCategoryTotals(assets, categories);
 
   final void Function(String) onCategoryTapped;
@@ -25,7 +28,10 @@ class AssetsCategoriesListWidget extends StatelessWidget {
 
     for (final category in categories) {
       final categoryAssets = assets.where((asset) => asset.categoryId == category.id);
-      final total = categoryAssets.fold<double>(0.0, (sum, asset) => sum + asset.purchasePrice);
+      final total = categoryAssets
+          .where((asset) => asset.saleDate == null)
+          .fold<double>(0.0, (sum, asset) => sum + asset.purchasePrice);
+          
       totals.add(CategoryTotal(category.id, category.name, total));
     }
     
@@ -51,7 +57,11 @@ class AssetsCategoriesListWidget extends StatelessWidget {
               itemCount: categoryTotals.length,
               itemBuilder: (context, index) {
                 final categoryTotal = categoryTotals[index];
-                return AssetsCategoriesListItemWidget(categoryTotal: categoryTotal, onCategoryTapped: (id) => onCategoryTapped(id));
+                return AssetsCategoriesListItemWidget(
+                  categoryTotal: categoryTotal, 
+                  onCategoryTapped: (id) => onCategoryTapped(id),
+                  selectedCategoryId: selectedCategoryId,
+                );
               },
             ),
           ),

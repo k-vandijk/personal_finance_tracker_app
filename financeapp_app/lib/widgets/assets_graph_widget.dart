@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 /// Configurable Constants
-const int numGhostPoints = 15;
+const int numGhostPoints = 8;
 const double lineCurveSmoothness = 0.4;
 const double lineThickness = 4.0;
 const double labelFontSize = 13.0;
-const int numDateLabels = 5;
-const int numValueLabels = 8;
+const int numDateLabels = 4;
+const int numValueLabels = 4; // 8
 const Color axisLabelColor = Colors.white;
 
 class _AnchorPoint {
@@ -101,7 +101,7 @@ class AssetsGraphWidget extends StatelessWidget {
     final maxX = spots.last.x;
     final maxY = spots.map((e) => e.y).fold(0.0, (prev, e) => e > prev ? e : prev);
     return Padding(
-      padding: const EdgeInsets.only(left: 32, right: 0),
+      padding: const EdgeInsets.only(left: 42, right: 6), // 42 - 36 (for the right axis labels)
       child: SizedBox(
         height: 300,
         child: LineChart(
@@ -111,13 +111,14 @@ class AssetsGraphWidget extends StatelessWidget {
             borderData: FlBorderData(show: false),
             titlesData: FlTitlesData(
               leftTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false, reservedSize: 0),
+                sideTitles: SideTitles(showTitles: false),
               ),
               rightTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 50,
-                  interval: maxY / (numValueLabels - 1),
+                  reservedSize: 36,
+                  interval: maxY / numValueLabels,
+                  maxIncluded: false,
                   getTitlesWidget: (value, meta) {
                     if (value.round() == 0) return Container();
                     return Text(
@@ -133,7 +134,6 @@ class AssetsGraphWidget extends StatelessWidget {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 40,
                   interval: (maxX - minX) / (numDateLabels - 1),
                   getTitlesWidget: (value, meta) {
                     return Text(

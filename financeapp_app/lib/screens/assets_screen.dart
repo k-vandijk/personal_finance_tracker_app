@@ -51,7 +51,9 @@ class _AssetsScreenState extends State<AssetsScreen> {
   }
 
   double _getTotal(List<AssetDTO> assets) {
-    return assets.fold(0.0, (sum, asset) => sum + asset.purchasePrice);
+    return assets
+        .where((asset) => asset.saleDate == null)
+        .fold(0.0, (sum, asset) => sum + asset.purchasePrice);
   }
 
   Future<void> _addAssetAsync(CreateAssetDTO asset) async {
@@ -143,6 +145,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                 assets: filteredAssets,
                 categories: filteredCategories,
                 onCategoryTapped: _filterAssets,
+                selectedCategoryId: _selectedCategoryId,
               ),
             ),
             const SizedBox(height: 16),

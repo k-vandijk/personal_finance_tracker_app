@@ -39,7 +39,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
           children: [
             TabBar(
               controller: _tabController,
-              indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
+              indicatorColor: Theme.of(context).colorScheme.tertiary.withAlpha(200),
               labelColor: Theme.of(context).colorScheme.onSecondaryContainer,
               unselectedLabelColor: Theme.of(context).colorScheme.onSecondaryContainer,
               dividerColor: Theme.of(context).colorScheme.surface,

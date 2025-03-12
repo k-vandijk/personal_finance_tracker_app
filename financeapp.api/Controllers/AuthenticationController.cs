@@ -24,6 +24,8 @@ public class AuthenticationController : BaseController
     }
 
     [HttpPost("register")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Register(AuthenticationDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
@@ -49,6 +51,9 @@ public class AuthenticationController : BaseController
     }
 
     [HttpPost("login")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
     public async Task<IActionResult> Login(AuthenticationDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
