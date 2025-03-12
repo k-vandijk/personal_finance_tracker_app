@@ -4,8 +4,14 @@ import 'package:financeapp_app/widgets/assets_list_item_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsListWidget extends StatelessWidget {
-  const AssetsListWidget({super.key, required this.assets, required this.categories, 
-                            required this.onTapAdd, required this.onSwipeLeft});
+  const AssetsListWidget({
+    super.key,
+    required this.assets,
+    required this.categories,
+    required this.onTapAdd,
+    required this.onSwipeLeft,
+    required this.onTapAsset,
+  });
 
   final List<AssetDTO> assets;
   final List<CategoryDTO> categories;
@@ -13,6 +19,7 @@ class AssetsListWidget extends StatelessWidget {
 
   final void Function() onTapAdd;
   final void Function(String) onSwipeLeft;
+  final void Function(AssetDTO) onTapAsset;
 
   /// Widgets
   Widget _buildAssetsLabelText(BuildContext context) {
@@ -68,7 +75,12 @@ class AssetsListWidget extends StatelessWidget {
                 (c) => c.id == asset.categoryId,
                 orElse: () => CategoryDTO('0', 'Unknown'),
               );
-              return AssetsListItemWidget(asset: asset, category: category, onSwipeLeft: (id) => onSwipeLeft(id));
+              return AssetsListItemWidget(
+                asset: asset,
+                category: category,
+                onSwipeLeft: (id) => onSwipeLeft(id),
+                onTap: (asset) => onTapAsset(asset),
+              );
             },
           ),
         ],

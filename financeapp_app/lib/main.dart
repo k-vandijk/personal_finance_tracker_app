@@ -24,7 +24,25 @@ Future<void> main() async {
       create: (_) => AuthService(),
       child: MaterialApp(
         theme: ThemeData().copyWith(colorScheme: kColorScheme),
-        darkTheme: ThemeData.dark().copyWith(colorScheme: kDarkColorScheme),
+
+        darkTheme: ThemeData.dark().copyWith(
+          colorScheme: kDarkColorScheme,
+          cardTheme: CardTheme(
+            color: kDarkColorScheme.inverseSurface,
+            elevation: 4,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kDarkColorScheme.tertiary.withAlpha(200),
+              foregroundColor: kDarkColorScheme.onTertiary,
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: kDarkColorScheme.tertiary,
+            ),
+          ),
+        ),
         home: const Shell(),
       ),
     ),

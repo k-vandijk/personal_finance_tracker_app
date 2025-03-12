@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:financeapp_app/config.dart';
 import 'package:financeapp_app/dtos/asset_dto.dart';
 import 'package:financeapp_app/dtos/category_dto.dart';
 import 'package:financeapp_app/services/assets_service.dart';
@@ -129,7 +130,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
         return ListView(
           children: [
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: animationMilliseconds),
               child: AssetsHeroWidget(
                 key: ValueKey(total),
                 amount: total,
@@ -139,7 +140,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
             AssetsGraphWidget(assets: filteredAssets),
             const SizedBox(height: 16),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: animationMilliseconds),
               child: AssetsCategoriesListWidget(
                 key: ValueKey(_selectedCategoryId ?? 'all'),
                 assets: filteredAssets,
@@ -150,13 +151,14 @@ class _AssetsScreenState extends State<AssetsScreen> {
             ),
             const SizedBox(height: 16),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: animationMilliseconds),
               child: AssetsListWidget(
                 key: ValueKey(_selectedCategoryId ?? 'all'),
                 assets: filteredAssets,
                 categories: filteredCategories,
                 onTapAdd: openAddAssetModal,
                 onSwipeLeft: (id) => _deleteAssetAsync(id),
+                onTapAsset: (asset) => print(asset.name)
               ),
             ),
           ],

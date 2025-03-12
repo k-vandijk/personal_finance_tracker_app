@@ -4,12 +4,13 @@ import 'package:financeapp_app/utils/formatter.dart';
 import 'package:flutter/material.dart';
 
 class AssetsListItemWidget extends StatelessWidget {
-  const AssetsListItemWidget({super.key, required this.asset, required this.category, required this.onSwipeLeft});
+  const AssetsListItemWidget({super.key, required this.asset, required this.category, required this.onSwipeLeft, required this.onTap});
 
   final AssetDTO asset;
   final CategoryDTO category;
 
   final void Function(String) onSwipeLeft;
+  final void Function(AssetDTO) onTap;
 
   /// Widgets
   Widget _buildDismissibleContainer(BuildContext context) {
@@ -71,25 +72,28 @@ class AssetsListItemWidget extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: _buildDismissibleContainer(context),
       onDismissed: (_) => onSwipeLeft(asset.id!),
-      child: Card(
-        color: !asset.isSold 
-          ? Theme.of(context).colorScheme.secondaryContainer 
-          : Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(120),
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: ListTile(
-          title: Row(
-            children: [
-              Expanded(child: _buildAssetName(context)), // Voorkomt overflow bij lange namen
-              _buildAssetPrice(context)
-            ],
-          ),
-          subtitle: Row(
-            children: [
-              Expanded(child: _buildAssetCategory(context)), // Voorkomt overflow bij lange categorieën
-              _buildAssetPurchaseDate(context),
-            ],
+      child: InkWell(
+        onTap: () => onTap(asset),
+        child: Card(
+          color: !asset.isSold 
+            ? Theme.of(context).colorScheme.secondaryContainer 
+            : Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(120),
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: ListTile(
+            title: Row(
+              children: [
+                Expanded(child: _buildAssetName(context)), // Voorkomt overflow bij lange namen
+                _buildAssetPrice(context)
+              ],
+            ),
+            subtitle: Row(
+              children: [
+                Expanded(child: _buildAssetCategory(context)), // Voorkomt overflow bij lange categorieën
+                _buildAssetPurchaseDate(context),
+              ],
+            ),
           ),
         ),
       ),

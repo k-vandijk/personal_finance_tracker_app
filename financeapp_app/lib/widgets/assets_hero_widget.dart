@@ -9,7 +9,6 @@ class AssetsHeroWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // height: 100,
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -22,7 +21,7 @@ class AssetsHeroWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
               ),
             ),
             Text(

@@ -82,10 +82,6 @@ class _AuthFormState extends State<AuthForm> {
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer,
-                  ),
                   child: Text(_isLogin ? 'Login' : 'Sign up'),
                 ),
                 TextButton(

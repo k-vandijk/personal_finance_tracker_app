@@ -9,7 +9,7 @@ const double lineCurveSmoothness = 0.4;
 const double lineThickness = 4.0;
 const double labelFontSize = 13.0;
 const int numDateLabels = 4;
-const int numValueLabels = 4; // 8
+const int numValueLabels = 4;
 const Color axisLabelColor = Colors.white;
 
 class _AnchorPoint {
@@ -156,7 +156,7 @@ class AssetsGraphWidget extends StatelessWidget {
                 isCurved: true,
                 curveSmoothness: lineCurveSmoothness,
                 dotData: const FlDotData(show: false),
-                color: Theme.of(context).colorScheme.tertiary.withAlpha(200),
+                color: Theme.of(context).colorScheme.tertiary,
                 barWidth: lineThickness,
               ),
             ],

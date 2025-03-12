@@ -1,6 +1,8 @@
 import 'package:financeapp_app/screens/assets_screen.dart';
 import 'package:financeapp_app/screens/auth_screen.dart';
 import 'package:financeapp_app/screens/home_screen.dart';
+import 'package:financeapp_app/screens/investments_screen.dart';
+import 'package:financeapp_app/screens/savings_screen.dart';
 import 'package:financeapp_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -39,18 +41,20 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
           children: [
             TabBar(
               controller: _tabController,
-              indicatorColor: Theme.of(context).colorScheme.tertiary.withAlpha(200),
-              labelColor: Theme.of(context).colorScheme.onSecondaryContainer,
-              unselectedLabelColor: Theme.of(context).colorScheme.onSecondaryContainer,
+              indicatorColor: Theme.of(context).colorScheme.tertiary,
+              labelColor: Theme.of(context).colorScheme.tertiary,
+              unselectedLabelColor: Theme.of(context).colorScheme.tertiary.withAlpha(200),
               dividerColor: Theme.of(context).colorScheme.surface,
               overlayColor: WidgetStateColor.transparent,
               tabAlignment: TabAlignment.start,
               isScrollable: true,
-              tabs: const [Tab(text: 'Home'), Tab(text: 'Assets')],
+              tabs: const [Tab(text: 'Home'), Tab(text: 'Collect'), Tab(text: 'Save'), Tab(text: 'Invest')],
             ),
             const Spacer(),
             IconButton(
+              iconSize: 35,
               icon: const Icon(Icons.account_circle),
+              color: Theme.of(context).colorScheme.onSurface,
               onPressed: () {},
             ),
           ],
@@ -58,7 +62,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [const HomeScreen(), const AssetsScreen()],
+        children: [const HomeScreen(), const AssetsScreen(), const SavingsScreen(), const InvestmentsScreen()],
       ),
     );
   }
