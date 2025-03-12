@@ -127,6 +127,24 @@ class _AssetsScreenState extends State<AssetsScreen> {
           );
         }
 
+        void openEditAssetModal(AssetDTO asset) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (ctx) => AddAssetModal(
+              ctx: ctx,
+              categories: allCategories, 
+              asset: asset,
+              onAddAsset: (updatedAsset) {
+                // TODO: Replace with update logic.
+                setState(() {
+                  _dataFuture = _fetchAssetsAndCategoriesAsync();
+                });
+              },
+            ),
+          );
+        }
+
         return ListView(
           children: [
             AnimatedSwitcher(
@@ -158,7 +176,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                 categories: filteredCategories,
                 onTapAdd: openAddAssetModal,
                 onSwipeLeft: (id) => _deleteAssetAsync(id),
-                onTapAsset: (asset) => print(asset.name)
+                onTapAsset: (asset) => openEditAssetModal(asset)
               ),
             ),
           ],
