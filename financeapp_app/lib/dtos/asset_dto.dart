@@ -4,8 +4,8 @@ class AssetDTO {
   final String name;
   final String? description;
   final DateTime purchaseDate;
-  final DateTime? saleDate;
   final double purchasePrice;
+  final DateTime? saleDate;
   final double? salePrice;
   final double? fictionalPrice;
 
@@ -13,30 +13,15 @@ class AssetDTO {
     this.id,
     required this.categoryId,
     required this.name,
+    this.description,
     required this.purchaseDate,
     required this.purchasePrice,
-    this.description,
     this.saleDate,
     this.salePrice,
     this.fictionalPrice,
   });
 
   bool get isSold => saleDate != null;
-
-  /// Creates a new instance of AssetDTO from a JSON map.
-  factory AssetDTO.fromJson(Map<String, dynamic> json) {
-    return AssetDTO(
-      id: json['id'],
-      categoryId: json['categoryId'],
-      name: json['name'],
-      description: json['description'],
-      purchaseDate: DateTime.parse(json['purchaseDate']),
-      saleDate: json['saleDate'] != null ? DateTime.parse(json['saleDate']) : null,
-      purchasePrice: json['purchasePrice'],
-      salePrice: json['salePrice'],
-      fictionalPrice: json['fictionalPrice'],
-    );
-  }
 }
 
 class CreateAssetDTO {

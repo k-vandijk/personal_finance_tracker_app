@@ -1,29 +1,87 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:financeapp_app/dtos/asset_dto.dart';
-import 'package:financeapp_app/services/http_service.dart';
-import 'package:http/http.dart';
+import 'package:financeapp_app/dtos/category_dto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// TODO Add caching
+// TODO: Fix returns en responses
+// TODO: Voeg caching toe
 
 class AssetsService {
-  final HttpService _httpService = HttpService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<Response> getAllAssetsAsync() async {
-    final response = await _httpService.getAsync('assets/getall');
-    return response;
+  CollectionReference get assets => _firestore.collection('assets');
+  CollectionReference get categories => _firestore.collection('categories');
+
+  Future<List<CategoryDTO>> getAllCategoriesAsync() async {
+    try {
+      final snapshot = await categories.get();
+
+      return snapshot.docs.map((doc) {
+        return CategoryDTO(doc.id, doc['name']);
+      }).toList();
+    } 
+    
+    catch (error) {
+      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
+      rethrow;
+    }
   }
 
-  Future<Response> getAllCategoriesAsync() async {
-    final response = await _httpService.getAsync('categories/getall');
-    return response;
+  Future<List<AssetDTO>> getAllAssetsAsync() async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+      final snapshot = await assets.where('userId', isEqualTo: userId).get();
+
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return AssetDTO(
+          id: doc.id,
+          categoryId: data['categoryId'],
+          name: data['name'],
+          description: (data['description'] as String?),
+          purchasePrice: (data['purchasePrice'] as num).toDouble(),
+          purchaseDate: (data['purchaseDate'] as Timestamp).toDate(),
+          salePrice: data['salePrice'] != null ? (data['salePrice'] as num).toDouble() : null,
+          saleDate: data['saleDate'] != null ? (data['saleDate'] as Timestamp).toDate() : null,
+          fictionalPrice: data['fictionalPrice'] != null ? (data['fictionalPrice'] as num).toDouble() : null,
+        );
+      }).toList();
+    } 
+    
+    catch (error) {
+      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
+      rethrow;
+    }
   }
 
-  Future<Response> addAssetAsync(CreateAssetDTO asset) async {
-    final response = await _httpService.postAsync('assets/create', body: asset);
-    return response;
+  Future<void> addAssetAsync(CreateAssetDTO asset) async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+      await assets.add({
+        'userId': userId,
+        'categoryId': asset.categoryId,
+        'name': asset.name,
+        'description': asset.description,
+        'purchasePrice': asset.purchasePrice,
+        'purchaseDate': asset.purchaseDate,
+        'fictionalPrice': asset.fictionalPrice,
+      });
+    } 
+    
+    catch (error) {
+      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
+      rethrow;
+    }
   }
 
-  Future<Response> deleteAssetAsync(String id) async {
-    final response = await _httpService.deleteAsync('assets/delete/$id');
-    return response;
+  Future<void> deleteAssetAsync(String id) async {
+    try {
+      await assets.doc(id).delete();
+    } 
+    
+    catch (error) {
+      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
+      rethrow;
+    }
   }
 }

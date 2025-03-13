@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:financeapp_app/config.dart';
 import 'package:financeapp_app/dtos/asset_dto.dart';
 import 'package:financeapp_app/dtos/category_dto.dart';
@@ -30,24 +29,12 @@ class _AssetsScreenState extends State<AssetsScreen> {
   @override
   void initState() {
     super.initState();
-    // _dataFuture = _fetchAssetsAndCategoriesAsync();
-  }
-
-  Future<List<AssetDTO>> _fetchAssetsAsync() async {
-    final assetsResponse = await _assetsService.getAllAssetsAsync();
-    final assetsJson = assetsResponse.body.trim().isEmpty ? [] : jsonDecode(assetsResponse.body) as List<dynamic>;
-    return assetsJson.map((json) => AssetDTO.fromJson(json)).toList();
-  }
-
-  Future<List<CategoryDTO>> _fetchCategoriesAsync() async {
-    final categoriesResponse = await _assetsService.getAllCategoriesAsync();
-    final categoriesJson = categoriesResponse.body.trim().isEmpty ? [] : jsonDecode(categoriesResponse.body) as List<dynamic>;
-    return categoriesJson.map((json) => CategoryDTO.fromJson(json)).toList();
+    _dataFuture = _fetchAssetsAndCategoriesAsync();
   }
 
   Future<Map<String, dynamic>> _fetchAssetsAndCategoriesAsync() async {
-    final assets = await _fetchAssetsAsync();
-    final categories = await _fetchCategoriesAsync();
+    final assets = await _assetsService.getAllAssetsAsync();
+    final categories = await _assetsService.getAllCategoriesAsync();
     return {'assets': assets, 'categories': categories};
   }
 
@@ -57,33 +44,27 @@ class _AssetsScreenState extends State<AssetsScreen> {
         .fold(0.0, (sum, asset) => sum + asset.purchasePrice);
   }
 
-  Future<void> _addAssetAsync(CreateAssetDTO asset) async {
-    final response = await _assetsService.addAssetAsync(asset);
-    if (response.statusCode != 200) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.body)));
-      return;
-    }
-    setState(() {
-      _dataFuture = _fetchAssetsAndCategoriesAsync();
-    });
-  }
-
-  Future<void> _deleteAssetAsync(String id) async {
-    final response = await _assetsService.deleteAssetAsync(id);
-    if (response.statusCode != 200) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response.body)));
-      return;
-    }
-    setState(() {
-      _dataFuture = _fetchAssetsAndCategoriesAsync();
-    });
-  }
-
   void _filterAssets(String categoryId) {
     setState(() {
       _selectedCategoryId = _selectedCategoryId == categoryId ? null : categoryId;
+    });
+  }
+
+  void _addAssetAsync(CreateAssetDTO asset) async {
+    await _assetsService.addAssetAsync(asset);
+    // TODO add error handling
+
+    setState(() {
+      _dataFuture = _fetchAssetsAndCategoriesAsync();
+    });
+  }
+
+  void _deleteAssetAsync(String assetId) async {
+    await _assetsService.deleteAssetAsync(assetId);
+    // TODO add error handling
+
+    setState(() {
+      _dataFuture = _fetchAssetsAndCategoriesAsync();
     });
   }
 
@@ -175,7 +156,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                 assets: filteredAssets,
                 categories: filteredCategories,
                 onTapAdd: openAddAssetModal,
-                onSwipeLeft: (id) => _deleteAssetAsync(id),
+                onSwipeLeft: _deleteAssetAsync,
                 onTapAsset: (asset) => openEditAssetModal(asset)
               ),
             ),
