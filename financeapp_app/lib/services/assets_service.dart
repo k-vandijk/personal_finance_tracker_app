@@ -3,7 +3,6 @@ import 'package:financeapp_app/dtos/asset_dto.dart';
 import 'package:financeapp_app/dtos/category_dto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-// TODO: Fix returns en responses
 // TODO: Voeg caching toe
 
 class AssetsService {
@@ -22,7 +21,6 @@ class AssetsService {
     } 
     
     catch (error) {
-      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
       rethrow;
     }
   }
@@ -31,6 +29,7 @@ class AssetsService {
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final snapshot = await assets.where('userId', isEqualTo: userId).get();
+
 
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
@@ -49,7 +48,6 @@ class AssetsService {
     } 
     
     catch (error) {
-      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
       rethrow;
     }
   }
@@ -69,7 +67,6 @@ class AssetsService {
     } 
     
     catch (error) {
-      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
       rethrow;
     }
   }
@@ -80,7 +77,23 @@ class AssetsService {
     } 
     
     catch (error) {
-      // TODO: Foutafhandeling: hier kan gelogd worden of extra actie ondernomen worden.
+      rethrow;
+    }
+  }
+
+  Future<void> editAssetAsync(String assetId, CreateAssetDTO asset) async {
+    try {
+      await assets.doc(assetId).update({
+        'categoryId': asset.categoryId,
+        'name': asset.name,
+        'description': asset.description,
+        'purchasePrice': asset.purchasePrice,
+        'purchaseDate': asset.purchaseDate,
+        'fictionalPrice': asset.fictionalPrice,
+      });
+    } 
+    
+    catch (error) {
       rethrow;
     }
   }

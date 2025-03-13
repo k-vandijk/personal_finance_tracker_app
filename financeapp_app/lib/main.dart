@@ -30,10 +30,6 @@ Future<void> main() async {
 
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: kDarkColorScheme,
-        cardTheme: CardTheme(
-          color: kDarkColorScheme.inverseSurface,
-          elevation: 4,
-        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: kDarkColorScheme.tertiary.withAlpha(200),

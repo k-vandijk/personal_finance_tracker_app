@@ -6,22 +6,32 @@ class AuthService {
   bool get isAuthenticated => FirebaseAuth.instance.currentUser != null;
 
   Future<void> loginAsync(AuthRequest dto) async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(email: dto.email, password: dto.password);
-  
-    // TODO Catch exceptions and return a custom message, to show in AuthScreen...
+    try{
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: dto.email, password: dto.password);
+    }
 
-    return;
+    catch (error) {
+      rethrow;
+    }
   }
 
   Future<void> registerAsync(AuthRequest dto) async {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: dto.email, password: dto.password);
-  
-    // TODO Catch exceptions and return a custom message, to show in AuthScreen...
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: dto.email, password: dto.password);
+    }
 
-    return;
+    catch (error) {
+      rethrow;
+    }
   }
 
   Future<void> logoutAsync() async {
-    await FirebaseAuth.instance.signOut();
+    try {
+      await FirebaseAuth.instance.signOut();
+    }
+
+    catch (error) {
+      rethrow;
+    }
   }
 }

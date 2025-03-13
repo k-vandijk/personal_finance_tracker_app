@@ -9,9 +9,8 @@ import 'package:financeapp_app/widgets/assets_hero_widget.dart';
 import 'package:financeapp_app/widgets/assets_list_widget.dart';
 import 'package:flutter/material.dart';
 
-// TODO Edit asset
 // TODO BUG als je komma gebruikt bij double, krijg je een error
-// TODO Optimistic update, toon de nieuwe asset direct in de lijst.
+// TODO Should-have Optimistic update, toon de nieuwe asset direct in de lijst.
 
 class AssetsScreen extends StatefulWidget {
   const AssetsScreen({super.key});
@@ -32,12 +31,89 @@ class _AssetsScreenState extends State<AssetsScreen> {
     _dataFuture = _fetchAssetsAndCategoriesAsync();
   }
 
+  // Data fetching methods
+  Future<List<AssetDTO>> _fetchAssetsAsync() async {
+    try {
+      return await _assetsService.getAllAssetsAsync();
+    }
+
+    catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      print('Error fetching assets: $error');
+      return [];
+    }
+  }
+
+  Future<List<CategoryDTO>> _fetchCategoriesAsync() async {
+    try {
+      return await _assetsService.getAllCategoriesAsync();
+    }
+
+    catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      print('Error fetching categories: $error');
+      return [];
+    }
+  }
+
   Future<Map<String, dynamic>> _fetchAssetsAndCategoriesAsync() async {
-    final assets = await _assetsService.getAllAssetsAsync();
-    final categories = await _assetsService.getAllCategoriesAsync();
+    final assets = await _fetchAssetsAsync();
+    final categories = await _fetchCategoriesAsync();
     return {'assets': assets, 'categories': categories};
   }
 
+  // Business logic methods
+  Future<void> _addAssetAsync(CreateAssetDTO asset) async {
+    try {
+      await _assetsService.addAssetAsync(asset);
+
+      setState(() {
+        _dataFuture = _fetchAssetsAndCategoriesAsync();
+      });
+    }
+
+    catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      print('Error adding asset: $error');
+    }
+  }
+
+  Future<void> _deleteAssetAsync(String assetId) async {
+    try {
+      await _assetsService.deleteAssetAsync(assetId);
+
+      setState(() {
+        _dataFuture = _fetchAssetsAndCategoriesAsync();
+      });
+    }
+
+    catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      print('Error deleting asset: $error');
+    }
+  }
+
+  Future<void> _editAssetAsync(String assetId, CreateAssetDTO asset) async {
+    try {
+      await _assetsService.editAssetAsync(assetId, asset);
+
+      setState(() {
+        _dataFuture = _fetchAssetsAndCategoriesAsync();
+      });
+    }
+
+    catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      print('Error editing asset: $error');
+    }
+  } 
+
+  // Helpers methods
   double _getTotal(List<AssetDTO> assets) {
     return assets
         .where((asset) => asset.saleDate == null)
@@ -50,29 +126,12 @@ class _AssetsScreenState extends State<AssetsScreen> {
     });
   }
 
-  void _addAssetAsync(CreateAssetDTO asset) async {
-    await _assetsService.addAssetAsync(asset);
-    // TODO add error handling
-
-    setState(() {
-      _dataFuture = _fetchAssetsAndCategoriesAsync();
-    });
-  }
-
-  void _deleteAssetAsync(String assetId) async {
-    await _assetsService.deleteAssetAsync(assetId);
-    // TODO add error handling
-
-    setState(() {
-      _dataFuture = _fetchAssetsAndCategoriesAsync();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
       future: _dataFuture,
       builder: (context, snapshot) {
+
         // Show loading spinner while fetching data
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -116,12 +175,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
               ctx: ctx,
               categories: allCategories, 
               asset: asset,
-              onAddAsset: (updatedAsset) {
-                // TODO: Replace with update logic.
-                setState(() {
-                  _dataFuture = _fetchAssetsAndCategoriesAsync();
-                });
-              },
+              onAddAsset: (newAsset) => _editAssetAsync(asset.id!, newAsset),
             ),
           );
         }
