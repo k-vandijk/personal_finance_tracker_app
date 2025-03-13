@@ -30,7 +30,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
   @override
   void initState() {
     super.initState();
-    _dataFuture = _fetchAssetsAndCategoriesAsync();
+    // _dataFuture = _fetchAssetsAndCategoriesAsync();
   }
 
   Future<List<AssetDTO>> _fetchAssetsAsync() async {
