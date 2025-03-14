@@ -101,7 +101,7 @@ class AssetsGraphWidget extends StatelessWidget {
     final maxX = spots.last.x;
     final maxY = spots.map((e) => e.y).fold(0.0, (prev, e) => e > prev ? e : prev);
     return Padding(
-      padding: const EdgeInsets.only(left: 42, right: 6), // 42 - 36 (for the right axis labels)
+      padding: const EdgeInsets.only(left: 38, right: 6), // 42 - 36 (for the right axis labels)
       child: SizedBox(
         height: 300,
         child: LineChart(

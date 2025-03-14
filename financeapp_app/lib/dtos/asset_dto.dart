@@ -33,6 +33,33 @@ class AssetDTO {
       categoryId: categoryId,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'categoryId': categoryId,
+      'name': name,
+      'description': description,
+      'purchaseDate': purchaseDate.toIso8601String(),
+      'purchasePrice': purchasePrice,
+      'saleDate': saleDate?.toIso8601String(),
+      'salePrice': salePrice,
+      'fictionalPrice': fictionalPrice,
+    };
+  }
+
+  factory AssetDTO.fromJson(Map<String, dynamic> json) {
+    return AssetDTO(
+      id: json['id'] as String,
+      categoryId: json['categoryId'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      purchasePrice: (json['purchasePrice'] as num).toDouble(),
+      purchaseDate: DateTime.parse(json['purchaseDate'] as String),
+      salePrice: json['salePrice'] != null ? (json['salePrice'] as num).toDouble() : null,
+      saleDate: json['saleDate'] != null ? DateTime.parse(json['saleDate'] as String) : null,
+      fictionalPrice: json['fictionalPrice'] != null ? (json['fictionalPrice'] as num).toDouble() : null,
+    );
+  }
 }
 
 class CreateAssetDTO {

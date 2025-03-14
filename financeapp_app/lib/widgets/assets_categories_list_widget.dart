@@ -47,12 +47,13 @@ class AssetsCategoriesListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text('Categories', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 8),
           Expanded(
             child: ListView.builder(
+              padding: const EdgeInsets.only(left: 16),
               scrollDirection: Axis.horizontal,
               itemCount: categoryTotals.length,
               itemBuilder: (context, index) {
