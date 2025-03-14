@@ -34,7 +34,9 @@ class AssetsGraphWidget extends StatelessWidget {
   }
 
   List<_AnchorPoint> _computeAnchorPoints() {
+    // Find the earliest purchase date among assets.
     final startDate = assets.map((e) => e.purchaseDate).reduce((a, b) => a.isBefore(b) ? a : b);
+    // Determine the end date based on saleDate or current time.
     final endDate = assets.fold<DateTime>(
       DateTime.now(),
       (prev, asset) {
@@ -96,6 +98,18 @@ class AssetsGraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Return a placeholder if there are no assets to display.
+    if (assets.isEmpty) {
+      return Container(
+        height: 300,
+        alignment: Alignment.center,
+        child: const Text(
+          'No assets available',
+          style: TextStyle(fontSize: 16, color: Colors.white),
+        ),
+      );
+    }
+
     final spots = _computeGhostPoints();
     final minX = spots.first.x;
     final maxX = spots.last.x;
