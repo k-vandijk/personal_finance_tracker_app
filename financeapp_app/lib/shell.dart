@@ -1,6 +1,8 @@
 import 'package:financeapp_app/screens/assets_screen.dart';
 import 'package:financeapp_app/screens/auth_screen.dart';
 import 'package:financeapp_app/screens/home_screen.dart';
+import 'package:financeapp_app/screens/investments_screen.dart';
+import 'package:financeapp_app/screens/savings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +19,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -61,11 +63,12 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
                   overlayColor: WidgetStateColor.transparent,
                   tabAlignment: TabAlignment.start,
                   isScrollable: true,
+                  labelStyle: const TextStyle(fontSize: 14),
                   tabs: const [
                     Tab(text: 'Home'),
                     Tab(text: 'Collect'),
-                    // Tab(text: 'Save'),
-                    // Tab(text: 'Invest'),
+                    Tab(text: 'Save'),
+                    Tab(text: 'Invest'),
                   ],
                 ),
                 const Spacer(),
@@ -83,8 +86,8 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
             children: const [
               HomeScreen(),
               AssetsScreen(),
-              // SavingsScreen(),
-              // InvestmentsScreen(),
+              SavingsScreen(),
+              InvestmentsScreen(),
             ],
           ),
         );

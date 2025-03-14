@@ -1,5 +1,6 @@
 import 'package:financeapp_app/dtos/auth_request.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
 
@@ -7,7 +8,11 @@ class AuthService {
 
   Future<void> loginAsync(AuthRequest dto) async {
     try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: dto.email, password: dto.password);
+      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: dto.email, password: dto.password);
+      
+      // Save email to local storage to welcome the user back.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('email', user.user?.email ?? '');
     }
 
     catch (error) {
@@ -18,6 +23,10 @@ class AuthService {
   Future<void> registerAsync(AuthRequest dto) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: dto.email, password: dto.password);
+    
+      // Save email to local storage to welcome the user back.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('email', dto.email);
     }
 
     catch (error) {
