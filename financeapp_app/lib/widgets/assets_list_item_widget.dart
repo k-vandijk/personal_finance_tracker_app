@@ -18,10 +18,10 @@ class AssetsListItemWidget extends StatelessWidget {
       color: Theme.of(context).colorScheme.error.withAlpha(150),
       alignment: Alignment.centerRight,
       padding: const EdgeInsets.only(right: 16),
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 16),
       child: Icon(
         Icons.delete,
-        color: Theme.of(context).colorScheme.onError,
+        color: Theme.of(context).colorScheme.onError.withAlpha(120),
         size: 24,
       ),
     );
@@ -34,7 +34,7 @@ class AssetsListItemWidget extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
     );
   }
@@ -45,7 +45,7 @@ class AssetsListItemWidget extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
     );
   }
@@ -54,14 +54,14 @@ class AssetsListItemWidget extends StatelessWidget {
     return Text(
       category.name,
       overflow: TextOverflow.ellipsis, // Zorgt ervoor dat lange categorieën niet overlopen
-      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondaryContainer),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onTertiary),
     );
   }
 
   Widget _buildAssetPurchaseDate(BuildContext context) {
     return Text(
       formatDateTime(asset.purchaseDate),
-      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondaryContainer),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onTertiary),
     );
   }
 
@@ -76,8 +76,8 @@ class AssetsListItemWidget extends StatelessWidget {
         onTap: () => onTap(asset),
         child: Card(
           color: !asset.isSold 
-            ? Theme.of(context).colorScheme.secondaryContainer 
-            : Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(120),
+            ? Theme.of(context).colorScheme.tertiary.withAlpha(200)
+            : Theme.of(context).colorScheme.tertiary.withAlpha(120),
           margin: const EdgeInsets.symmetric(vertical: 4),
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

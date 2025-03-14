@@ -20,7 +20,7 @@ class AssetsCategoriesListItemWidget extends StatelessWidget {
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
     );
   }
@@ -33,7 +33,7 @@ class AssetsCategoriesListItemWidget extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
     );
   }
@@ -47,8 +47,8 @@ class AssetsCategoriesListItemWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: Card(
           color: isSelected 
-            ? Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(120)
-            : Theme.of(context).colorScheme.secondaryContainer,
+            ? Theme.of(context).colorScheme.tertiary
+            : Theme.of(context).colorScheme.tertiary.withAlpha(200),
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(

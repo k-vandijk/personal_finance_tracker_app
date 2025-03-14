@@ -33,7 +33,7 @@ class AssetsListWidget extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onTapAdd,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.tertiary.withAlpha(200),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         minimumSize: const Size(0, 0),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Verkleint de knop
