@@ -36,6 +36,7 @@ class AssetDTO {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id, // ensure id is included in the cache
       'categoryId': categoryId,
       'name': name,
       'description': description,
@@ -49,7 +50,7 @@ class AssetDTO {
 
   factory AssetDTO.fromJson(Map<String, dynamic> json) {
     return AssetDTO(
-      id: json['id'] as String,
+      id: json['id'] as String? ?? 'temp_${DateTime.now().millisecondsSinceEpoch}',
       categoryId: json['categoryId'] as String,
       name: json['name'] as String,
       description: json['description'] as String?,
@@ -61,6 +62,7 @@ class AssetDTO {
     );
   }
 }
+
 
 class CreateAssetDTO {
   final String name;

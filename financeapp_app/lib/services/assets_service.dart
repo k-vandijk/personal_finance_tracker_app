@@ -13,25 +13,20 @@ class AssetsService {
   Future<List<CategoryDTO>> getAllCategoriesAsync() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      
-      // Check if a JSON string for the full category list exists in local storage.
       final cachedJson = prefs.getString('categories');
       if (cachedJson != null) {
-        // Decode the JSON and convert to a list of CategoryDTO.
         final List<dynamic> jsonList = jsonDecode(cachedJson);
         return jsonList.map((jsonItem) => CategoryDTO.fromJson(jsonItem)).toList();
       }
-      
-      // If not cached, fetch categories from Firestore.
+
+      // Fetch from Firestore
       final snapshot = await categories.get();
       final List<CategoryDTO> categoryList = snapshot.docs.map((doc) {
         return CategoryDTO(doc.id, doc['name']);
       }).toList();
-      
-      // Save the complete list as a JSON string in SharedPreferences.
+
       final jsonString = jsonEncode(categoryList.map((cat) => cat.toJson()).toList());
       await prefs.setString('categories', jsonString);
-      
       return categoryList;
     } 
     
@@ -40,18 +35,10 @@ class AssetsService {
     }
   }
 
-  Future<List<AssetDTO>> getAllAssetsAsync() async {
+  // Internal helper to fetch assets from Firestore and update the cache.
+  Future<List<AssetDTO>> _getAllAssetsFromFirestoreAsync() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // Return cached assets if available.
-      final cachedJson = prefs.getString('assets');
-      if (cachedJson != null) {
-        final List<dynamic> jsonList = jsonDecode(cachedJson);
-        return jsonList.map((jsonItem) => AssetDTO.fromJson(jsonItem)).toList();
-      }
-
-      // If not cached, fetch assets from Firestore.
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final snapshot = await assets.where('userId', isEqualTo: userId).get();
 
@@ -70,11 +57,28 @@ class AssetsService {
         );
       }).toList();
 
-      // Cache the fetched asset list as a JSON string.
+      // Update the cache.
       final jsonString = jsonEncode(assetList.map((asset) => asset.toJson()).toList());
       await prefs.setString('assets', jsonString);
-
       return assetList;
+    } 
+    
+    catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<List<AssetDTO>> getAllAssetsAsync() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final cachedJson = prefs.getString('assets');
+      if (cachedJson != null) {
+        final List<dynamic> jsonList = jsonDecode(cachedJson);
+        return jsonList.map((jsonItem) => AssetDTO.fromJson(jsonItem)).toList();
+      }
+
+      // If cache is empty, fetch from Firestore.
+      return _getAllAssetsFromFirestoreAsync();
     } 
     
     catch (error) {
@@ -95,9 +99,12 @@ class AssetsService {
         'fictionalPrice': asset.fictionalPrice,
       });
 
-      // Clear the cached asset list to force a refresh.
+      // Clear cache to force refresh.
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('assets');
+
+      // Fire-and-forget: refresh the cache in the background.
+      _getAllAssetsFromFirestoreAsync();
     } 
     
     catch (error) {
@@ -109,9 +116,12 @@ class AssetsService {
     try {
       await assets.doc(id).delete();
 
-      // Clear the cached asset list to force a refresh.
+      // Clear cache to force refresh.
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('assets');
+
+      // Fire-and-forget: refresh the cache in the background.
+      _getAllAssetsFromFirestoreAsync();
     } 
     
     catch (error) {
@@ -130,9 +140,12 @@ class AssetsService {
         'fictionalPrice': asset.fictionalPrice,
       });
 
-      // Clear the cached asset list to force a refresh.
+      // Clear cache to force refresh.
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('assets');
+
+      // Fire-and-forget: refresh the cache in the background.
+      _getAllAssetsFromFirestoreAsync();
     } 
     
     catch (error) {
