@@ -3,8 +3,6 @@ import 'package:financeapp_app/dtos/asset_dto.dart';
 import 'package:financeapp_app/dtos/category_dto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-// TODO: Voeg caching toe
-
 class AssetsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 

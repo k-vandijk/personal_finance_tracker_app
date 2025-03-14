@@ -9,9 +9,6 @@ import 'package:financeapp_app/widgets/assets_hero_widget.dart';
 import 'package:financeapp_app/widgets/assets_list_widget.dart';
 import 'package:flutter/material.dart';
 
-// TODO BUG als je komma gebruikt bij double, krijg je een error
-// TODO Should-have Optimistic update, toon de nieuwe asset direct in de lijst.
-
 class AssetsScreen extends StatefulWidget {
   const AssetsScreen({super.key});
 
