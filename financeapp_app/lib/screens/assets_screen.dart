@@ -32,11 +32,11 @@ class _AssetsScreenState extends State<AssetsScreen> {
   Future<List<AssetDTO>> _fetchAssetsAsync() async {
     try {
       return await _assetsService.getAllAssetsAsync();
-    }
-
-    catch (error) {
+    } catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
       print('Error fetching assets: $error');
       return [];
     }
@@ -45,11 +45,11 @@ class _AssetsScreenState extends State<AssetsScreen> {
   Future<List<CategoryDTO>> _fetchCategoriesAsync() async {
     try {
       return await _assetsService.getAllCategoriesAsync();
-    }
-
-    catch (error) {
+    } catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
       print('Error fetching categories: $error');
       return [];
     }
@@ -69,27 +69,44 @@ class _AssetsScreenState extends State<AssetsScreen> {
       setState(() {
         _dataFuture = _fetchAssetsAndCategoriesAsync();
       });
-    }
-
-    catch (error) {
+    } catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
       print('Error adding asset: $error');
     }
   }
 
   Future<void> _deleteAssetAsync(String assetId) async {
     try {
+      final assetToDelete = (await _assetsService.getAllAssetsAsync()).firstWhere((asset) => asset.id == assetId);
       await _assetsService.deleteAssetAsync(assetId);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Asset deleted'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () async {
+              await _assetsService.addAssetAsync(assetToDelete.toCreateAssetDTO());
+              setState(() {
+                _dataFuture = _fetchAssetsAndCategoriesAsync();
+              });
+            },
+          ),
+        ),
+      );
 
       setState(() {
         _dataFuture = _fetchAssetsAndCategoriesAsync();
       });
-    }
 
-    catch (error) {
+    } catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
       print('Error deleting asset: $error');
     }
   }
@@ -101,14 +118,14 @@ class _AssetsScreenState extends State<AssetsScreen> {
       setState(() {
         _dataFuture = _fetchAssetsAndCategoriesAsync();
       });
-    }
-
-    catch (error) {
+    } catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
       print('Error editing asset: $error');
     }
-  } 
+  }
 
   // Helpers methods
   double _getTotal(List<AssetDTO> assets) {
@@ -119,7 +136,8 @@ class _AssetsScreenState extends State<AssetsScreen> {
 
   void _filterAssets(String categoryId) {
     setState(() {
-      _selectedCategoryId = _selectedCategoryId == categoryId ? null : categoryId;
+      _selectedCategoryId =
+          _selectedCategoryId == categoryId ? null : categoryId;
     });
   }
 
@@ -128,12 +146,11 @@ class _AssetsScreenState extends State<AssetsScreen> {
     return FutureBuilder<Map<String, dynamic>>(
       future: _dataFuture,
       builder: (context, snapshot) {
-
         // Show loading spinner while fetching data
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         // Show error message if fetching data failed
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -142,13 +159,19 @@ class _AssetsScreenState extends State<AssetsScreen> {
         final allAssets = snapshot.data?['assets'] as List<AssetDTO>;
         final allCategories = snapshot.data?['categories'] as List<CategoryDTO>;
 
-        final filteredAssets = _selectedCategoryId == null
-            ? allAssets
-            : allAssets.where((asset) => asset.categoryId == _selectedCategoryId).toList();
+        final filteredAssets =
+            _selectedCategoryId == null
+                ? allAssets
+                : allAssets
+                    .where((asset) => asset.categoryId == _selectedCategoryId)
+                    .toList();
 
-        final filteredCategories = _selectedCategoryId == null
-            ? allCategories
-            : allCategories.where((category) => category.id == _selectedCategoryId).toList();
+        final filteredCategories =
+            _selectedCategoryId == null
+                ? allCategories
+                : allCategories
+                    .where((category) => category.id == _selectedCategoryId)
+                    .toList();
 
         final total = _getTotal(filteredAssets);
 
@@ -156,11 +179,12 @@ class _AssetsScreenState extends State<AssetsScreen> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (ctx) => AddAssetModal(
-              ctx: ctx,
-              categories: allCategories,
-              onAddAsset: _addAssetAsync,
-            ),
+            builder:
+                (ctx) => AddAssetModal(
+                  ctx: ctx,
+                  categories: allCategories,
+                  onAddAsset: _addAssetAsync,
+                ),
           );
         }
 
@@ -168,12 +192,14 @@ class _AssetsScreenState extends State<AssetsScreen> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (ctx) => AddAssetModal(
-              ctx: ctx,
-              categories: allCategories, 
-              asset: asset,
-              onAddAsset: (newAsset) => _editAssetAsync(asset.id!, newAsset),
-            ),
+            builder:
+                (ctx) => AddAssetModal(
+                  ctx: ctx,
+                  categories: allCategories,
+                  asset: asset,
+                  onAddAsset:
+                      (newAsset) => _editAssetAsync(asset.id!, newAsset),
+                ),
           );
         }
 
@@ -181,10 +207,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
           children: [
             AnimatedSwitcher(
               duration: const Duration(milliseconds: animationMilliseconds),
-              child: AssetsHeroWidget(
-                key: ValueKey(total),
-                amount: total,
-              ),
+              child: AssetsHeroWidget(key: ValueKey(total), amount: total),
             ),
             const SizedBox(height: 16),
             AssetsGraphWidget(assets: filteredAssets),
@@ -208,7 +231,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                 categories: filteredCategories,
                 onTapAdd: openAddAssetModal,
                 onSwipeLeft: _deleteAssetAsync,
-                onTapAsset: (asset) => openEditAssetModal(asset)
+                onTapAsset: (asset) => openEditAssetModal(asset),
               ),
             ),
           ],

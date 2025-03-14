@@ -22,6 +22,17 @@ class AssetDTO {
   });
 
   bool get isSold => saleDate != null;
+
+  CreateAssetDTO toCreateAssetDTO() {
+    return CreateAssetDTO(
+      name: name,
+      description: description ?? '',
+      purchasePrice: purchasePrice,
+      purchaseDate: purchaseDate,
+      fictionalPrice: fictionalPrice ?? 0.0,
+      categoryId: categoryId,
+    );
+  }
 }
 
 class CreateAssetDTO {

@@ -38,10 +38,9 @@ class _AddAssetModalState extends State<AddAssetModal> {
     // Preload fields if editing an existing asset.
     if (widget.asset != null) {
       _assetNameController.text = widget.asset!.name;
-      _descriptionController.text = widget.asset!.description ?? "";
+      _descriptionController.text = widget.asset!.description ?? '';
       _purchasePriceController.text = widget.asset!.purchasePrice.toString();
-      _fictionalPriceController.text =
-          widget.asset!.fictionalPrice?.toString() ?? "";
+      _fictionalPriceController.text = widget.asset!.fictionalPrice?.toString() ?? '';
       _purchaseDate = widget.asset!.purchaseDate;
     
       // Find matching category from provided list.
@@ -62,8 +61,8 @@ class _AddAssetModalState extends State<AddAssetModal> {
         name: _assetNameController.text,
         description: _descriptionController.text,
         purchaseDate: _purchaseDate!,
-        purchasePrice: double.parse(_purchasePriceController.text),
-        fictionalPrice: double.parse(_fictionalPriceController.text),
+        purchasePrice: double.parse(_purchasePriceController.text.replaceAll(',', '.')),
+        fictionalPrice: double.parse(_fictionalPriceController.text.replaceAll(',', '.')),
         categoryId: _selectedCategory!.id,
       );
       widget.onAddAsset(asset);
