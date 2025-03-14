@@ -1,5 +1,6 @@
 import 'package:financeapp_app/screens/assets_screen.dart';
 import 'package:financeapp_app/screens/auth_screen.dart';
+import 'package:financeapp_app/screens/child_session_auth_screen.dart';
 import 'package:financeapp_app/screens/home_screen.dart';
 import 'package:financeapp_app/screens/investments_screen.dart';
 import 'package:financeapp_app/screens/savings_screen.dart';
@@ -15,6 +16,13 @@ class Shell extends StatefulWidget {
 
 class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _childSessionActive = false;
+
+  void _activateChildSession() {
+    setState(() {
+      _childSessionActive = true;
+    });
+  }
 
   @override
   void initState() {
@@ -43,6 +51,11 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
         // If no user is authenticated, show the AuthScreen
         if (!snapshot.hasData) {
           return const AuthScreen();
+        }
+
+        // If child session is not active, show the ChildSessionAuthScreen.
+        if (!_childSessionActive) {
+          return ChildSessionAuthScreen(onAuthenticated: _activateChildSession);
         }
 
         // When a user is logged in, show the main app shell
