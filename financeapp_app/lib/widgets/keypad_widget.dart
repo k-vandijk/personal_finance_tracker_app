@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 class KeypadWidget extends StatelessWidget {
   final int currentPinLength;
   final void Function(String key) onKeyPressed;
-  final VoidCallback attemptBiometric;
+  final VoidCallback onBiometricsPressed;
+  final String title;
 
   const KeypadWidget({
     super.key,
     required this.currentPinLength,
     required this.onKeyPressed,
-    required this.attemptBiometric,
+    required this.onBiometricsPressed,
+    required this.title,
   });
 
   Widget _buildPinDots() {
@@ -61,7 +63,7 @@ class KeypadWidget extends StatelessWidget {
 
   Widget _buildFingerprintKey() {
     return GestureDetector(
-      onTap: attemptBiometric,
+      onTap: onBiometricsPressed,
       child: Container(
         width: 70,
         height: 70,
@@ -100,7 +102,11 @@ class KeypadWidget extends StatelessWidget {
         // Row 4: Fingerprint, 0, Backspace
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [_buildFingerprintKey(), _buildKey('0'), _buildKey('back')],
+          children: [
+            _buildFingerprintKey(),
+            _buildKey('0'),
+            _buildKey('back')
+          ],
         ),
       ],
     );
@@ -111,9 +117,9 @@ class KeypadWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          'Enter PIN',
-          style: TextStyle(
+        Text(
+          title,
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: Colors.white,

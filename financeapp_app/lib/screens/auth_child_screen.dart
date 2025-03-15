@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:financeapp_app/services/auth_service.dart';
 import 'package:financeapp_app/widgets/keypad_widget.dart';
 import 'package:flutter/material.dart';
@@ -5,13 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
 class AuthChildScreen extends StatefulWidget {
-  final VoidCallback onAuthenticated;
+  final void Function(bool) onAuthenticated;
   const AuthChildScreen({super.key, required this.onAuthenticated});
 
   @override
-  State<StatefulWidget> createState() {
-    return _AuthChildScreenState();
-  }
+  State<StatefulWidget> createState() => _AuthChildScreenState();
 }
 
 class _AuthChildScreenState extends State<AuthChildScreen> {
@@ -19,6 +19,7 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
   bool _isAuthenticating = false;
   bool _usePin = false;
   String _enteredPin = '';
+  bool? _hasPinSet; // null means not determined yet
 
   final AuthService _authService = AuthService();
 
@@ -37,38 +38,47 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
             stickyAuth: true,
           ),
         );
-
         if (authenticated) {
-          widget.onAuthenticated();
+          widget.onAuthenticated(true);
           return;
         }
       }
-    } 
-    
-    on PlatformException catch (e) {
+    } on PlatformException catch (e) {
       if (e.message != null &&
           e.message!.contains('Security credentials not available')) {
         setState(() {
           _isAuthenticating = false;
           _usePin = true;
         });
+        await _checkIfPinExists();
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message ?? 'An error occurred')),
       );
-    } 
-    
-    catch (e) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
     }
-
     setState(() {
       _isAuthenticating = false;
-      _usePin = true; // fallback to PIN if biometric fails
+      _usePin = true; // Fallback to PIN if biometric fails.
     });
+    await _checkIfPinExists();
+  }
+
+  /// Checks Firestore for an existing user document with a PIN set.
+  Future<void> _checkIfPinExists() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final data = snapshot.data();
+      setState(() {
+        _hasPinSet = data != null && data['pinHash'] != null;
+      });
+    }
   }
 
   void _onKeyPressed(String key) {
@@ -78,34 +88,46 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
           _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
         });
       }
-    } 
-    
-    else if (_enteredPin.length < 4) {
+      return;
+    } else if (_enteredPin.length < 4) {
       setState(() {
         _enteredPin += key;
       });
       if (_enteredPin.length == 4) {
-        _submitPinAsync();
+        if (_hasPinSet == true) {
+          _submitPinAsync();
+        } else if (_hasPinSet == false) {
+          _setPinAsync();
+        }
       }
     }
   }
 
+  /// Verifies the entered PIN against the stored value.
   Future<void> _submitPinAsync() async {
     try {
-      // await _authService.verifyPinAsync(_enteredPin);
-      // widget.onAuthenticated();
-
-      if (_enteredPin == '0000') {
-        widget.onAuthenticated();
-        return;
-      }
-
-      // the verifyPinAsync method will throw an exception if the pin is invalid
+      await _authService.verifyPinAsync(_enteredPin);
+      widget.onAuthenticated(true);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+      setState(() {
+        _enteredPin = '';
+      });
     }
-    catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+  }
+
+  /// Sets a new PIN if none exists.
+  Future<void> _setPinAsync() async {
+    try {
+      await _authService.setPinAsync(_enteredPin);
+      widget.onAuthenticated(true);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+      setState(() {
+        _enteredPin = '';
+      });
     }
   }
 
@@ -118,9 +140,16 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isAuthenticating) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+          body: Center(child: CircularProgressIndicator()));
     }
     if (_usePin) {
+      if (_hasPinSet == null) {
+        // Still checking Firestore for PIN information.
+        return const Scaffold(
+            body: Center(child: CircularProgressIndicator()));
+      }
+      final title = _hasPinSet! ? 'Enter PIN' : 'Set PIN';
       return Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -135,17 +164,20 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
           ),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               child: KeypadWidget(
                 currentPinLength: _enteredPin.length,
                 onKeyPressed: _onKeyPressed,
-                attemptBiometric: _attemptBiometric,
+                onBiometricsPressed: _attemptBiometric,
+                title: title,
               ),
             ),
           ),
         ),
       );
     }
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+        body: Center(child: CircularProgressIndicator()));
   }
 }

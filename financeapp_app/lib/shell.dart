@@ -20,9 +20,9 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   bool _childSessionActive = false;
 
   // Called after successful authentication.
-  void _activateChildSession() {
+  void _activateChildSession(bool state) {
     setState(() {
-      _childSessionActive = true;
+      _childSessionActive = state;
     });
   }
 
@@ -40,7 +40,6 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   
   @override
   Widget build(BuildContext context) {
-    final double paddingSize = MediaQuery.of(context).size.width * 0.12;
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
@@ -50,13 +49,15 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
         }
         // If there's no Firebase user, show the parent authentication screen.
         if (!snapshot.hasData) {
-          return AuthParentScreen(onAuthenticated: _activateChildSession);
+          return AuthParentScreen(bypassChildAuth: _activateChildSession);
         }
         // If user exists but child session is not active, show child auth.
         if (!_childSessionActive) {
           return AuthChildScreen(onAuthenticated: _activateChildSession);
         }
-        
+
+        final double paddingSize = MediaQuery.of(context).size.width * 0.12;
+
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.surface,
@@ -69,7 +70,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
               dividerHeight: -1,
               tabAlignment: TabAlignment.start,
               isScrollable: true,
-              indicator: BoxDecoration(),
+              indicator: const BoxDecoration(),
               tabs: [
                 const Tab(text: 'Home'),
                 const Tab(text: 'Collect'),
