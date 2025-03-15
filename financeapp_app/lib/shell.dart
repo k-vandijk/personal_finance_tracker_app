@@ -1,11 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:financeapp_app/screens/assets_screen.dart';
-import 'package:financeapp_app/screens/auth_screen.dart';
-import 'package:financeapp_app/screens/child_session_auth_screen.dart';
 import 'package:financeapp_app/screens/home_screen.dart';
 import 'package:financeapp_app/screens/investments_screen.dart';
 import 'package:financeapp_app/screens/savings_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:financeapp_app/screens/auth_parent_screen.dart';
+import 'package:financeapp_app/screens/auth_child_screen.dart';
 
 class Shell extends StatefulWidget {
   const Shell({super.key});
@@ -18,6 +18,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _childSessionActive = false;
 
+  // Called after successful parent (email/password) authentication.
   void _activateChildSession() {
     setState(() {
       _childSessionActive = true;
@@ -38,27 +39,25 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // StreamBuilder automatically rebuilds the widget tree when the auth state changes
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        
-        // Display a loading indicator while waiting for authentication state
+        // Show loading indicator while waiting for auth state.
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // If no user is authenticated, show the AuthScreen
+        // If no Firebase user, show the parent auth screen.
         if (!snapshot.hasData) {
-          return const AuthScreen();
+          return AuthParentScreen(onAuthenticated: _activateChildSession);
         }
 
-        // If child session is not active, show the ChildSessionAuthScreen.
+        // If user exists but child session is not active, show child auth.
         if (!_childSessionActive) {
-          return ChildSessionAuthScreen(onAuthenticated: _activateChildSession);
+          return AuthChildScreen(onAuthenticated: _activateChildSession);
         }
 
-        // When a user is logged in, show the main app shell
+        // Otherwise, show the main app shell.
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.surface,
@@ -68,10 +67,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
                   controller: _tabController,
                   indicatorColor: Theme.of(context).colorScheme.tertiary,
                   labelColor: Theme.of(context).colorScheme.tertiary,
-                  unselectedLabelColor: Theme.of(context)
-                      .colorScheme
-                      .tertiary
-                      .withAlpha(200),
+                  unselectedLabelColor: Theme.of(context).colorScheme.tertiary.withAlpha(200),
                   dividerColor: Theme.of(context).colorScheme.surface,
                   overlayColor: WidgetStateColor.transparent,
                   tabAlignment: TabAlignment.start,
