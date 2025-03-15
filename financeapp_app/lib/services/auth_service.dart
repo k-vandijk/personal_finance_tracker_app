@@ -104,4 +104,27 @@ class AuthService {
       rethrow;
     }
   }
+
+  Future<bool> checkIfPinExistsAsync() async {
+    try {
+      // Get the current user
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not found');
+      }
+
+      // Get the user details
+      final snapshot = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (!snapshot.exists) {
+        return false;
+      }
+
+      final userDetails = UserDetails.fromJson(snapshot.data()!);
+      return userDetails.pinHash.isNotEmpty;
+    }
+
+    catch (e) {
+      rethrow;
+    }
+  }
 }
