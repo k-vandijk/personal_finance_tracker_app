@@ -5,8 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
 class AuthChildScreen extends StatefulWidget {
-  final void Function(bool) onAuthenticated;
-  const AuthChildScreen({super.key, required this.onAuthenticated});
+  final void Function(bool) activateChildSession;
+  const AuthChildScreen({super.key, required this.activateChildSession});
 
   @override
   State<StatefulWidget> createState() => _AuthChildScreenState();
@@ -44,7 +44,7 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
           ),
         );
         if (authenticated) {
-          widget.onAuthenticated(true);
+          widget.activateChildSession(true);
           return;
         }
       }
@@ -69,8 +69,6 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
     });
     await _checkIfPinExists();
   }
-
-  
 
   /// Handles key presses from the keypad.
   void _onKeyPressed(String key) {
@@ -136,7 +134,7 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
   Future<void> _submitPinAsync() async {
     try {
       await _authService.verifyPinAsync(_enteredPin);
-      widget.onAuthenticated(true);
+      widget.activateChildSession(true);
     } catch (e) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
@@ -147,7 +145,7 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
   Future<void> _setPinAsync() async {
     try {
       await _authService.setPinAsync(_enteredPin);
-      widget.onAuthenticated(true);
+      widget.activateChildSession(true);
     } catch (e) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('An error occurred while setting your PIN')));
@@ -158,15 +156,14 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isAuthenticating) {
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_usePin) {
       if (_hasPinSet == null) {
-        return const Scaffold(
-            body: Center(child: CircularProgressIndicator()));
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
       }
+
       final title = _hasPinSet!
           ? 'Enter PIN'
           : (_isConfirming ? 'Confirm PIN' : 'Set PIN');

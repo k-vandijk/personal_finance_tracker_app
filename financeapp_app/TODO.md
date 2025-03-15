@@ -1,7 +1,7 @@
 ## TODO
 
-- Complete parent- and childauthentication...
-- Clean up auth files.
+- Profile Screen: Change PIN
+- Profile Screen: Enable Biometrics
 - Start working on savings screen.
 
 

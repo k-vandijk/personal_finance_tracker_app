@@ -49,11 +49,11 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
         }
         // If there's no Firebase user, show the parent authentication screen.
         if (!snapshot.hasData) {
-          return AuthParentScreen(bypassChildAuth: _activateChildSession);
+          return AuthParentScreen(activateChildSession: _activateChildSession);
         }
         // If user exists but child session is not active, show child auth.
         if (!_childSessionActive) {
-          return AuthChildScreen(onAuthenticated: _activateChildSession);
+          return AuthChildScreen(activateChildSession: _activateChildSession);
         }
 
         final double paddingSize = MediaQuery.of(context).size.width * 0.12;
