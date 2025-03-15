@@ -18,7 +18,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _childSessionActive = false;
 
-  // Called after successful parent (email/password) authentication.
+  // Called after successful authentication.
   void _activateChildSession() {
     setState(() {
       _childSessionActive = true;
