@@ -1,8 +1,9 @@
-import 'package:financeapp_app/services/auth_service.dart';
+import 'package:financeapp_app/firebase_options.dart';
 import 'package:financeapp_app/shell.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final ColorScheme kColorScheme = ColorScheme.fromSeed(
   seedColor: const Color.fromARGB(255, 0, 255, 98),
@@ -14,19 +15,38 @@ final ColorScheme kDarkColorScheme = ColorScheme.fromSeed(
 );
 
 Future<void> main() async {
-  
-  // Ensure that the app is in portrait mode.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Ensure app is portrait only
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthService(),
-      child: MaterialApp(
-        theme: ThemeData().copyWith(colorScheme: kColorScheme),
-        darkTheme: ThemeData.dark().copyWith(colorScheme: kDarkColorScheme),
-        home: const Shell(),
+    MaterialApp(
+      theme: ThemeData().copyWith(colorScheme: kColorScheme),
+
+      darkTheme: ThemeData.dark().copyWith(
+        colorScheme: kDarkColorScheme,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kDarkColorScheme.tertiary.withAlpha(200),
+            foregroundColor: kDarkColorScheme.onTertiary,
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: kDarkColorScheme.tertiary,
+          ),
+        ),
       ),
+      home: const Shell(),
     ),
   );
 }

@@ -4,8 +4,14 @@ import 'package:financeapp_app/widgets/assets_list_item_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsListWidget extends StatelessWidget {
-  const AssetsListWidget({super.key, required this.assets, required this.categories, 
-                            required this.onTapAdd, required this.onSwipeLeft});
+  const AssetsListWidget({
+    super.key,
+    required this.assets,
+    required this.categories,
+    required this.onTapAdd,
+    required this.onSwipeLeft,
+    required this.onTapAsset,
+  });
 
   final List<AssetDTO> assets;
   final List<CategoryDTO> categories;
@@ -13,6 +19,7 @@ class AssetsListWidget extends StatelessWidget {
 
   final void Function() onTapAdd;
   final void Function(String) onSwipeLeft;
+  final void Function(AssetDTO) onTapAsset;
 
   /// Widgets
   Widget _buildAssetsLabelText(BuildContext context) {
@@ -26,7 +33,7 @@ class AssetsListWidget extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onTapAdd,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         minimumSize: const Size(0, 0),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Verkleint de knop
@@ -34,11 +41,11 @@ class AssetsListWidget extends StatelessWidget {
       icon: Icon(
         Icons.add,
         size: 16,
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
       label: Text(
         'Add',
-        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondaryContainer),
+        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onTertiary),
       ),
     );
   }
@@ -46,7 +53,7 @@ class AssetsListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           Row(
@@ -68,7 +75,12 @@ class AssetsListWidget extends StatelessWidget {
                 (c) => c.id == asset.categoryId,
                 orElse: () => CategoryDTO('0', 'Unknown'),
               );
-              return AssetsListItemWidget(asset: asset, category: category, onSwipeLeft: (id) => onSwipeLeft(id));
+              return AssetsListItemWidget(
+                asset: asset,
+                category: category,
+                onSwipeLeft: (id) => onSwipeLeft(id),
+                onTap: (asset) => onTapAsset(asset),
+              );
             },
           ),
         ],

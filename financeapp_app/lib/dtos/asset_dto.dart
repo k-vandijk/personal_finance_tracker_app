@@ -4,8 +4,8 @@ class AssetDTO {
   final String name;
   final String? description;
   final DateTime purchaseDate;
-  final DateTime? saleDate;
   final double purchasePrice;
+  final DateTime? saleDate;
   final double? salePrice;
   final double? fictionalPrice;
 
@@ -13,29 +13,56 @@ class AssetDTO {
     this.id,
     required this.categoryId,
     required this.name,
+    this.description,
     required this.purchaseDate,
     required this.purchasePrice,
-    this.description,
     this.saleDate,
     this.salePrice,
     this.fictionalPrice,
   });
 
-  /// Creates a new instance of AssetDTO from a JSON map.
+  bool get isSold => saleDate != null;
+
+  CreateAssetDTO toCreateAssetDTO() {
+    return CreateAssetDTO(
+      name: name,
+      description: description ?? '',
+      purchasePrice: purchasePrice,
+      purchaseDate: purchaseDate,
+      fictionalPrice: fictionalPrice ?? 0.0,
+      categoryId: categoryId,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id, // ensure id is included in the cache
+      'categoryId': categoryId,
+      'name': name,
+      'description': description,
+      'purchaseDate': purchaseDate.toIso8601String(),
+      'purchasePrice': purchasePrice,
+      'saleDate': saleDate?.toIso8601String(),
+      'salePrice': salePrice,
+      'fictionalPrice': fictionalPrice,
+    };
+  }
+
   factory AssetDTO.fromJson(Map<String, dynamic> json) {
     return AssetDTO(
-      id: json['id'],
-      categoryId: json['categoryId'],
-      name: json['name'],
-      description: json['description'],
-      purchaseDate: DateTime.parse(json['purchaseDate']),
-      saleDate: json['saleDate'] != null ? DateTime.parse(json['saleDate']) : null,
-      purchasePrice: json['purchasePrice'],
-      salePrice: json['salePrice'],
-      fictionalPrice: json['fictionalPrice'],
+      id: json['id'] as String? ?? 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      categoryId: json['categoryId'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      purchasePrice: (json['purchasePrice'] as num).toDouble(),
+      purchaseDate: DateTime.parse(json['purchaseDate'] as String),
+      salePrice: json['salePrice'] != null ? (json['salePrice'] as num).toDouble() : null,
+      saleDate: json['saleDate'] != null ? DateTime.parse(json['saleDate'] as String) : null,
+      fictionalPrice: json['fictionalPrice'] != null ? (json['fictionalPrice'] as num).toDouble() : null,
     );
   }
 }
+
 
 class CreateAssetDTO {
   final String name;

@@ -1,97 +1,106 @@
-import 'dart:convert';
-
-import 'package:financeapp_app/config.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:financeapp_app/dtos/auth_request.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:financeapp_app/dtos/user_details_dto.dart';
+import 'package:financeapp_app/services/assets_service.dart';
+import 'package:financeapp_app/services/hashing_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:financeapp_app/services/http_service.dart';
 
-class AuthService extends ChangeNotifier {
-  String? _token;
-  bool get isAuthenticated => _token != null;
+class AuthService {
 
-  final HttpService _httpService = HttpService();
+  final HashingService _hashingService = HashingService();
+  final AssetsService _assetsService = AssetsService();
 
-  AuthService() {
-    _getTokenFromStorage();
-  }
+  bool get isAuthenticated => FirebaseAuth.instance.currentUser != null;
 
-  Future<void> _getTokenFromStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
-    final expiryString = prefs.getString('jwt_expiry');
+  Future<void> loginAsync(AuthRequest dto) async {
+    try{
+      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: dto.email, password: dto.password);
+      
+      // Save email to local storage to welcome the user back.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('email', user.user?.email ?? '');
 
-    if (_isTokenValid(token, expiryString)) {
-      _token = token;
-      notifyListeners();
-    } else {
-      await _removeTokenFromStorageAsync();
+      // Clear caches
+      await _assetsService.clearAssetsCacheAsync();
+    }
+
+    catch (error) {
+      rethrow;
     }
   }
 
-  bool _isTokenValid(String? token, String? expiryString) {
-    if (token == null || expiryString == null) {
-      return false;
-    }
-
-    final expiryTime = DateTime.tryParse(expiryString);
-    if (expiryTime != null && DateTime.now().isBefore(expiryTime)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /// Saves the token and its expiry time to local storage.
-  Future<void> _saveTokenToStorageAsync(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    final expiryTime = DateTime.now().add(const Duration(minutes: tokenExpiryMinutes));
-    await prefs.setString('jwt_token', token);
-    await prefs.setString('jwt_expiry', expiryTime.toIso8601String());
-  }
-
-  /// Removes the token and expiry time from local storage.
-  Future<void> _removeTokenFromStorageAsync() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('jwt_token');
-    await prefs.remove('jwt_expiry');
-  }
-
-  Future<void> _handleAuthenticationAsync (String responseBody) async {
-    // Parse the token from the response body
-    final tokenObject = jsonDecode(responseBody) as Map<String, dynamic>;
-    final token = tokenObject['token'] as String;
-
-    // Save the token...    
-    _token = token;
-    await _saveTokenToStorageAsync(token);
-    notifyListeners();
-  }
-
-  Future<Response> loginAsync(AuthRequest dto) async {
-    var response = await _httpService.postAsync('auth/login', body: dto);
-    if (response.statusCode != 200) {
-      return response;
-    }
-
-    await _handleAuthenticationAsync(response.body);
-    return response;
-  }
-
-  Future<Response> registerAsync(AuthRequest dto) async {
-    var response = await _httpService.postAsync('auth/register', body: dto);
-    if (response.statusCode != 200) {
-      return response;
-    }
+  Future<void> registerAsync(AuthRequest dto) async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: dto.email, password: dto.password);
     
-    await _handleAuthenticationAsync(response.body);
-    return response;
+      // Save email to local storage to welcome the user back.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('email', dto.email);
+
+      // Clear caches
+      await _assetsService.clearAssetsCacheAsync();
+    }
+
+    catch (error) {
+      rethrow;
+    }
   }
 
   Future<void> logoutAsync() async {
-    _token = null;
-    await _removeTokenFromStorageAsync();
-    notifyListeners();
+    try {
+      await FirebaseAuth.instance.signOut();
+    }
+
+    catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> setPinAsync(String pin) async {
+    try {
+      // Get the current user
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not found');
+      }
+
+      // Hash and salt
+      final String salt = _hashingService.generateSalt();
+      final String hashedPin = _hashingService.hashPin(pin, salt);
+
+      // Save the hashed pin and salt to the database
+      final userDetails = UserDetails(pinHash: hashedPin, pinSalt: salt, userId: user.uid);
+      await FirebaseFirestore.instance.collection('userDetails').doc(user.uid).set(userDetails.toJson());
+    }
+
+    catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> verifyPinAsync(String pin) async {
+    try {
+      // Get the current user
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not found');
+      }
+
+      // Get the user details
+      final snapshot = await FirebaseFirestore.instance.collection('userDetails').doc(user.uid).get();
+      if (!snapshot.exists) {
+        throw Exception('User details not found');
+      }
+
+      final userDetails = UserDetails.fromJson(snapshot.data()!);
+      if (!_hashingService.verifyPin(pin, userDetails.pinSalt, userDetails.pinHash)) {
+        throw Exception('Invalid PIN');
+      }
+    }
+
+    catch (e) {
+      rethrow;
+    }
   }
 }
