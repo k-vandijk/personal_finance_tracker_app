@@ -6,6 +6,7 @@ import 'package:financeapp_app/screens/investments_screen.dart';
 import 'package:financeapp_app/screens/savings_screen.dart';
 import 'package:financeapp_app/screens/auth_parent_screen.dart';
 import 'package:financeapp_app/screens/auth_child_screen.dart';
+import 'package:financeapp_app/screens/profile_screen.dart';
 
 class Shell extends StatefulWidget {
   const Shell({super.key});
@@ -28,7 +29,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -36,9 +37,10 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
     _tabController.dispose();
     super.dispose();
   }
-
+  
   @override
   Widget build(BuildContext context) {
+    final double paddingSize = MediaQuery.of(context).size.width * 0.12;
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
@@ -46,46 +48,36 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        // If no Firebase user, show the parent auth screen.
+        // If there's no Firebase user, show the parent authentication screen.
         if (!snapshot.hasData) {
           return AuthParentScreen(onAuthenticated: _activateChildSession);
         }
-
         // If user exists but child session is not active, show child auth.
         if (!_childSessionActive) {
           return AuthChildScreen(onAuthenticated: _activateChildSession);
         }
-
-        // Otherwise, show the main app shell.
+        
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.surface,
-            title: Row(
-              children: [
-                TabBar(
-                  controller: _tabController,
-                  indicatorColor: Theme.of(context).colorScheme.tertiary,
-                  labelColor: Theme.of(context).colorScheme.tertiary,
-                  unselectedLabelColor: Theme.of(context).colorScheme.tertiary.withAlpha(200),
-                  dividerColor: Theme.of(context).colorScheme.surface,
-                  overlayColor: WidgetStateColor.transparent,
-                  tabAlignment: TabAlignment.start,
-                  isScrollable: true,
-                  labelStyle: const TextStyle(fontSize: 14),
-                  tabs: const [
-                    Tab(text: 'Home'),
-                    Tab(text: 'Collect'),
-                    Tab(text: 'Save'),
-                    Tab(text: 'Invest'),
-                  ],
-                ),
-                const Spacer(),
-                IconButton(
-                  iconSize: 35,
-                  icon: const Icon(Icons.account_circle),
-                  color: Theme.of(context).colorScheme.onSurface,
-                  onPressed: () {},
+            title: TabBar(
+              controller: _tabController,
+              labelColor: Theme.of(context).colorScheme.tertiary,
+              unselectedLabelColor: Theme.of(context).colorScheme.tertiary.withAlpha(120),
+              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              overlayColor: WidgetStateColor.transparent,
+              dividerHeight: -1,
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
+              indicator: BoxDecoration(),
+              tabs: [
+                const Tab(text: 'Home'),
+                const Tab(text: 'Collect'),
+                const Tab(text: 'Save'),
+                const Tab(text: 'Invest'),
+                Padding(
+                  padding: EdgeInsets.only(left: paddingSize),
+                  child: const Tab(icon: Icon(Icons.account_circle, size: 28)),
                 ),
               ],
             ),
@@ -97,6 +89,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
               AssetsScreen(),
               SavingsScreen(),
               InvestmentsScreen(),
+              ProfileScreen(),
             ],
           ),
         );
