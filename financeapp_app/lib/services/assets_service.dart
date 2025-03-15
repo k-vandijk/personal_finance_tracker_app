@@ -86,6 +86,11 @@ class AssetsService {
     }
   }
 
+  Future<void> clearAssetsCacheAsync() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('assets');
+  }
+
   Future<void> addAssetAsync(CreateAssetDTO asset) async {
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -99,9 +104,7 @@ class AssetsService {
         'fictionalPrice': asset.fictionalPrice,
       });
 
-      // Clear cache to force refresh.
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.remove('assets');
+      await clearAssetsCacheAsync();
 
       // Fire-and-forget: refresh the cache in the background.
       _getAllAssetsFromFirestoreAsync();
@@ -116,9 +119,7 @@ class AssetsService {
     try {
       await assets.doc(id).delete();
 
-      // Clear cache to force refresh.
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.remove('assets');
+      await clearAssetsCacheAsync();
 
       // Fire-and-forget: refresh the cache in the background.
       _getAllAssetsFromFirestoreAsync();
@@ -140,9 +141,7 @@ class AssetsService {
         'fictionalPrice': asset.fictionalPrice,
       });
 
-      // Clear cache to force refresh.
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.remove('assets');
+      await clearAssetsCacheAsync();
 
       // Fire-and-forget: refresh the cache in the background.
       _getAllAssetsFromFirestoreAsync();

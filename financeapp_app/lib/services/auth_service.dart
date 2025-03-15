@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:financeapp_app/dtos/auth_request.dart';
 import 'package:financeapp_app/dtos/user_details_dto.dart';
+import 'package:financeapp_app/services/assets_service.dart';
 import 'package:financeapp_app/services/hashing_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
 
   final HashingService _hashingService = HashingService();
+  final AssetsService _assetsService = AssetsService();
 
   bool get isAuthenticated => FirebaseAuth.instance.currentUser != null;
 
@@ -18,6 +20,9 @@ class AuthService {
       // Save email to local storage to welcome the user back.
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('email', user.user?.email ?? '');
+
+      // Clear caches
+      await _assetsService.clearAssetsCacheAsync();
     }
 
     catch (error) {
@@ -32,6 +37,9 @@ class AuthService {
       // Save email to local storage to welcome the user back.
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('email', dto.email);
+
+      // Clear caches
+      await _assetsService.clearAssetsCacheAsync();
     }
 
     catch (error) {
