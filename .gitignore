@@ -1,7 +1,5 @@
-.env.*
-.env
-**/google-services.json
-
+/.env
+/android/app/google-services.json
 
 # Miscellaneous
 *.class
