@@ -5,30 +5,36 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
 class AuthChildScreen extends StatefulWidget {
-  final VoidCallback onAuthenticated;
-  const AuthChildScreen({super.key, required this.onAuthenticated});
+  final void Function(bool) activateChildSession;
+  const AuthChildScreen({super.key, required this.activateChildSession});
 
   @override
-  State<StatefulWidget> createState() {
-    return _AuthChildScreenState();
-  }
+  State<StatefulWidget> createState() => _AuthChildScreenState();
 }
 
 class _AuthChildScreenState extends State<AuthChildScreen> {
   final LocalAuthentication _localAuth = LocalAuthentication();
+  final AuthService _authService = AuthService();
+
   bool _isAuthenticating = false;
   bool _usePin = false;
   String _enteredPin = '';
+  bool? _hasPinSet; 
+  bool _isConfirming = false;
+  String _firstPin = '';
 
-  final AuthService _authService = AuthService();
+  @override
+  void initState() {
+    super.initState();
+    _attemptBiometric();
+  }
 
+  /// Attempts biometric authentication and falls back to PIN if needed.
   Future<void> _attemptBiometric() async {
     try {
       final bool canCheckBiometrics = await _localAuth.canCheckBiometrics;
       if (canCheckBiometrics) {
-        setState(() {
-          _isAuthenticating = true;
-        });
+        setState(() => _isAuthenticating = true);
         final bool authenticated = await _localAuth.authenticate(
           localizedReason: 'Please authenticate to unlock the app',
           options: const AuthenticationOptions(
@@ -37,82 +43,114 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
             stickyAuth: true,
           ),
         );
-
         if (authenticated) {
-          widget.onAuthenticated();
+          widget.activateChildSession(true);
           return;
         }
       }
-    } 
-    
-    on PlatformException catch (e) {
-      if (e.message != null &&
-          e.message!.contains('Security credentials not available')) {
+    } on PlatformException catch (e) {
+      if (e.message?.contains('Security credentials not available') ?? false) {
         setState(() {
           _isAuthenticating = false;
           _usePin = true;
         });
+        await _checkIfPinExists();
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'An error occurred')),
-      );
-    } 
-    
-    catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'An error occurred')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text('An error occurred')));
     }
-
     setState(() {
       _isAuthenticating = false;
-      _usePin = true; // fallback to PIN if biometric fails
+      _usePin = true;
     });
+    await _checkIfPinExists();
   }
 
+  /// Handles key presses from the keypad.
   void _onKeyPressed(String key) {
+    // Handle backspace.
     if (key == 'back') {
       if (_enteredPin.isNotEmpty) {
         setState(() {
           _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
         });
       }
-    } 
-    
-    else if (_enteredPin.length < 4) {
-      setState(() {
-        _enteredPin += key;
-      });
-      if (_enteredPin.length == 4) {
-        _submitPinAsync();
-      }
+      return;
     }
+
+    // Prevent adding more digits if already 4.
+    if (_enteredPin.length >= 4) return;
+
+    // Append the key.
+    setState(() {
+      _enteredPin += key;
+    });
+
+    // If PIN is not complete, exit early.
+    if (_enteredPin.length < 4) return;
+
+    // At this point, _enteredPin has exactly 4 digits.
+    if (_hasPinSet == true) {
+      // Verify existing PIN.
+      _submitPinAsync();
+      return;
+    }
+
+    // Setting a new PIN.
+    if (!_isConfirming) {
+      _firstPin = _enteredPin;
+      setState(() {
+        _enteredPin = '';
+        _isConfirming = true;
+      });
+      return;
+    }
+
+    // Confirming new PIN.
+    if (_enteredPin == _firstPin) {
+      _setPinAsync();
+    } else {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PINs do not match')));
+      setState(() {
+        _enteredPin = '';
+        _firstPin = '';
+        _isConfirming = false;
+      });
+    }
+  }
+
+  Future<void> _checkIfPinExists() async {
+    final bool hasPinSet = await _authService.checkIfPinExistsAsync();
+    setState(() {
+      _hasPinSet = hasPinSet;
+    });
   }
 
   Future<void> _submitPinAsync() async {
     try {
-      // await _authService.verifyPinAsync(_enteredPin);
-      // widget.onAuthenticated();
-
-      if (_enteredPin == '0000') {
-        widget.onAuthenticated();
-        return;
-      }
-
-      // the verifyPinAsync method will throw an exception if the pin is invalid
-    }
-    catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      await _authService.verifyPinAsync(_enteredPin);
+      widget.activateChildSession(true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      setState(() => _enteredPin = '');
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _attemptBiometric();
+  Future<void> _setPinAsync() async {
+    try {
+      await _authService.setPinAsync(_enteredPin);
+      widget.activateChildSession(true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('An error occurred while setting your PIN')));
+      setState(() => _enteredPin = '');
+    }
   }
 
   @override
@@ -120,7 +158,16 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
     if (_isAuthenticating) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
     if (_usePin) {
+      if (_hasPinSet == null) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+
+      final title = _hasPinSet!
+          ? 'Enter PIN'
+          : (_isConfirming ? 'Confirm PIN' : 'Set PIN');
+
       return Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -135,11 +182,13 @@ class _AuthChildScreenState extends State<AuthChildScreen> {
           ),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               child: KeypadWidget(
                 currentPinLength: _enteredPin.length,
                 onKeyPressed: _onKeyPressed,
-                attemptBiometric: _attemptBiometric,
+                onBiometricsPressed: _attemptBiometric,
+                title: title,
               ),
             ),
           ),

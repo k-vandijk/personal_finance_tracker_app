@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AuthParentScreen extends StatelessWidget {
-  final VoidCallback onAuthenticated;
-  const AuthParentScreen({super.key, required this.onAuthenticated});
+  final void Function(bool) activateChildSession;
+  const AuthParentScreen({super.key, required this.activateChildSession});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class AuthParentScreen extends StatelessWidget {
     Future<void> loginAsync(String email, String password) async {
       try {
         await authService.loginAsync(AuthRequest(email: email, password: password));
-        onAuthenticated();
+        activateChildSession(true);
       } 
       
       on FirebaseAuthException catch (e) {
@@ -58,7 +58,7 @@ class AuthParentScreen extends StatelessWidget {
     Future<void> register(String email, String password) async {
       try {
         await authService.registerAsync(AuthRequest(email: email, password: password));
-        onAuthenticated();
+        activateChildSession(false); // Let the user navigate to child auth to set a PIN.
       } 
       
       on FirebaseAuthException catch (e) {

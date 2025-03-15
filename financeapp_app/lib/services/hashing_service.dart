@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HashingService {
 
@@ -13,7 +14,12 @@ class HashingService {
 
   /// Hashes the [key] concatenated with the [salt] using SHA‑256.
   String hashPin(String key, String salt) {
-    final bytes = utf8.encode(key + salt);
+    final String pepper = dotenv.env['PEPPER'] ?? '';
+    if (pepper.isEmpty) {
+      throw Exception('PEPPER is not set in .env');
+    }
+    
+    final bytes = utf8.encode(key + salt + pepper);
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
